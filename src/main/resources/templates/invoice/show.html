@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Show Invoice</title>
+    <title>Index</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"
+          th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link th:href="@{/plugins/datatables/datatables.css}" rel="stylesheet">
+    <script src="/webjars/jquery/3.3.1/jquery.min.js"></script>
+    <script th:src="@{/plugins/datatables/datatables.js}"></script>
+        <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+
+</head>
+<body>
+<div th:replace="navigation/nav :: nav"></div>
+<div class="container theme-showcase">
+    <div class="page-header" th:text="${invoice.invoiceNumber}">Invoice number</div>
+    <div class="container-fluid" style="margin-top: 20px">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"> Created: </h3>
+                    </div>
+                    <div class="panel-body" th:text="${#dates.format(invoice.time, 'dd-MM-yyyy')}">
+                        Some text
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="panel-one">
+                            <h3 class="panel-title"> Customer: </h3>
+                        </div>
+                        <div class="panel-two">
+                            <span class="glyphicon glyphicon-edit"></span>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <p th:text="${invoice.customer.name}"></p>
+                        <p th:text="${invoice.customer.email}"></p>
+                        <p th:text="${invoice.customer.phone}"></p>
+                        <p th:text="${invoice.customer.address}"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4"></div>
+        </div>
+        <h2 class="sub-header">Invoice sale</h2>
+        <div class="table-responsive">
+            <table class="table table-striped" id="myTable">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Amount</th>
+                    <th>Total amount</th>
+                    <th>Edit</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="sale: ${sales}">
+                    <td th:text="${sale.id}">1,001</td>
+                    <td th:text="${sale.product.name}">Lorem</td>
+                    <td th:text="${sale.quantity}">sit</td>
+                    <td th:text="${sale.product.price}">ipsum</td>
+                    <td th:text="${sale.totalAmount}">dolor</td>
+                    <td>
+                        <span class="glyphicon glyphicon-edit editSale"></span>
+                        <span class="glyphicon glyphicon-trash deleteSale"></span>
+                        <button type="button" class="btn btn-default btn-sm diskSave">
+                            <span class="glyphicon glyphicon-floppy-saved"></span> Disk Saved
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <form>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Email address</label>
+                    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+                    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Password</label>
+                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+            <button class="btn btn-primary" id="addNewSale">Add</button>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+
+    var table = $('myTable').DataTable();
+
+    $(".editSale").click(function editSale() {
+
+    })
+</script>
+</html>

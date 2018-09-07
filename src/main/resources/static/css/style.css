@@ -1,0 +1,39 @@
+.panel-one {
+    display: inline-block;
+    width: 80%;
+}
+.panel-two {
+    display: inline-block;
+    width: 18%;
+}
+.panel-two .glyphicon {
+    float: right;
+}
+.diskSave {
+    display: none;
+}
+table
+{
+    counter-reset: rowNumber;
+}
+
+table tbody tr {
+    counter-increment: rowNumber 1;
+}
+table tbody tr td:first-child::before {
+    content: counter(rowNumber) ". ";
+}
+
+
+/*Customers part*/
+.customer-edit {
+    display: inline-block;
+    width: 100%;       /* set to 100% */
+    padding-bottom: .6em;
+    color: #fff;
+    background-color: #aaabbb;
+    border-radius: 5px;
+    border: solid #cccccc 1px;
+    box-shadow: 2px 2px 1px #888888;
+    float:left;
+}

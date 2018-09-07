@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"
+          th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link th:href="@{/plugins/datatables/datatables.css}" rel="stylesheet">
+    <script src="/webjars/jquery/3.3.1/jquery.min.js"></script>
+    <script th:src="@{/plugins/datatables/datatables.js}"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+</head>
+<body>
+<div th:replace="navigation/nav :: nav"></div>
+<div class="container theme-showcase">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-primary">
+
+                <div class="panel-heading">
+                    <h1 class="panel-title">All Customers!</h1>
+                </div>
+                <div class="panel-body">
+                    <div class="table-responsive" th:if="${not #lists.isEmpty(customers)}">
+                        <table class="table table-striped" id="customersTable">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone number</th>
+                                <th>Address</th>
+                                <th>Pib</th>
+                                <th>Company id number</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
+                                <th>Delete2</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="customer: ${customers}">
+                                <td></td>
+                                <td th:text="${customer.name}">Laza</td>
+                                <td th:text="${customer.email}">laza@gmail.com</td>
+                                <td th:text="${customer.phone}">064812184</td>
+                                <td th:text="${customer.address}">Sumarice 41</td>
+                                <td th:text="${customer.pib}">064812184</td>
+                                <td th:text="${customer.idNumber}">064812184</td>
+                                <td>
+                                    <a href="#" th:href="@{'/customer/' + ${customer.id} + '/update'}">
+                                        <span class="glyphicon glyphicon-edit"></span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="#" th:attr="data-id=${customer.id}" class="deleteCus">
+                                        <span class="glyphicon glyphicon-trash" ></span> Delete
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="#" th:attr="data-id=${customer.id}" class="editCus">
+                                        <span class="glyphicon glyphicon-edit" ></span> Delete
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <a href="#" th:href="@{'/customer/new'}" class="btn btn-primary">
+                            Add customer
+                        </a>
+                    </div>
+                    <div th:if="${#lists.isEmpty(customers)}">
+                        <p>Please add some costumers</p>
+                        <button class="btn btn-primary">Add customer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit</h4>
+            </div>
+            <form id="editCustomer-form">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="inputName">Name</label>
+                    <input type="text" class="form-control" id="inputName" placeholder="Enter firstname">
+                </div>
+                <div class="form-group">
+                    <label for="inputEmail">Email</label>
+                    <input type="email" class="form-control" id="inputEmail" placeholder="Enter email">
+                    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                </div>
+                <div class="form-group">
+                    <label for="inputPhone">Phone number</label>
+                    <input type="tel" class="form-control" id="inputPhone" placeholder="Enter phone">
+                </div>
+                <div class="form-group">
+                    <label for="inputAddress">Address</label>
+                    <input type="text" class="form-control" id="inputAddress" placeholder="Enter address">
+                </div>
+                <div class="form-group">
+                    <label for="inputPib">Pib</label>
+                    <input type="text" class="form-control" id="inputPib" placeholder="Enter pib">
+                </div>
+                <div class="form-group">
+                    <label for="inputIdNumber">Id Number</label>
+                    <input type="text" class="form-control" id="inputIdNumber" placeholder="Enter id number">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var customers = /*[[${customers}]]*/ null;
+
+    const $inputName = $("#inputName");
+    const $inputEmail = $("#inputEmail");
+    const $inputPhone = $("#inputPhone");
+    const $inputAddress = $("#inputAddress");
+    const $inputPib = $("#inputPib");
+    const $inputIdNumber = $("#inputIdNumber");
+
+
+    $( document ).ready(function() {
+        var table = $('#customersTable').DataTable();
+    });
+
+    $('.deleteCus').click( function () {
+        let id = $(this).attr("data-id");
+        let selected = $(this);
+
+        deleteCustomerAjax(id, function removeRow () {
+            removeJSON(customers, "id", id);
+            table
+                .row( selected.parents('tr') )
+                .remove()
+                .draw();
+        });
+    } );
+
+    function deleteCustomerAjax(customerId, callback) {
+        $.ajax({
+            url : "/customer/" + customerId,
+            type : "DELETE",
+            success : function(data) {
+                console.log(data);
+                if(data) callback();
+            },
+            error : function(data) {
+                console.log(data);
+            }
+        })
+    }
+
+    $('.editCus').click( function () {
+        let id = $(this).attr("data-id");
+
+        let customer = findJSONItem(customers, "id", id);
+
+        fillFormEdit(customer);
+
+        $("#myModal").modal();
+
+    });
+
+    function fillFormEdit(customer) {
+        $inputName.val(customer.name);
+        $inputEmail.val(customer.email);
+        $inputPhone.val(customer.phone);
+        $inputAddress.val(customer.address);
+        $inputPib.val(customer.pib);
+        $inputIdNumber.val(customer.idNumber);
+    }
+
+    function saveCustomer() {
+
+    }
+
+    $("#editCustomer-form").submit(function(e){
+        e.preventDefault();
+        saveCustomer();
+    });
+
+    function findJSONItem(arr, key, value) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i][key] == value) {
+                return(arr[i]);
+            }
+        }
+        return(-1);
+    }
+
+    function changeCustomerJson(arr, object) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i].id == object.id) {
+                arr[i].name = object.name;
+            }
+        }
+    }
+    function removeJSON(arr, key, value) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i][key] == value || arr[i][key] === value) {
+                delete arr[i];
+                arr.splice(i, 1);
+                return true;
+            }
+        }
+        return null;
+    }
+</script>
+</html>
