@@ -21,67 +21,26 @@
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-primary">
-
                 <div class="panel-heading">
-                    <h1 class="panel-title">All Customers!</h1>
-                </div>
-                <div class="panel-body">
-                    <div class="table-responsive" th:if="${not #lists.isEmpty(customers)}">
-                        <table class="table table-striped" id="customersTable">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Phone number</th>
-                                <th>Address</th>
-                                <th>Pib</th>
-                                <th>Company id number</th>
-                                <th>Edit</th>
-                                <th>Delete</th>
-                                <th>Delete2</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="customer: ${customers}">
-                                <td></td>
-                                <td th:text="${customer.name}">Laza</td>
-                                <td th:text="${customer.email}">laza@gmail.com</td>
-                                <td th:text="${customer.phone}">064812184</td>
-                                <td th:text="${customer.address}">Sumarice 41</td>
-                                <td th:text="${customer.pib}">064812184</td>
-                                <td th:text="${customer.idNumber}">064812184</td>
-                                <td>
-                                    <a href="#" th:href="@{'/customer/' + ${customer.id} + '/update'}">
-                                        <span class="glyphicon glyphicon-edit"></span>
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="#" th:attr="data-id=${customer.id}" class="deleteCus">
-                                        <span class="glyphicon glyphicon-trash" ></span> Delete
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="#" th:attr="data-id=${customer.id}" class="editCus">
-                                        <span class="glyphicon glyphicon-edit" ></span> Delete
-                                    </a>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        <a href="#" th:href="@{'/customer/new'}" class="btn btn-primary">
+                    <div class="panel-title-two">
+                        <h1 class="panel-title">All Customers!</h1>
+                    </div>
+                    <div class="panel-btn">
+                        <a href="#" class="btn btn-info" id="addCus">
                             Add customer
                         </a>
                     </div>
-                    <div th:if="${#lists.isEmpty(customers)}">
-                        <p>Please add some costumers</p>
-                        <button class="btn btn-primary">Add customer</button>
-                    </div>
+                </div>
+                <div class="overlay">
+                    <div id="loader"></div>
+                </div>
+                <div class="panel-body" id="tableBody">
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 </body>
 <div id="myModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
@@ -93,7 +52,7 @@
                 <h4 class="modal-title">Edit</h4>
             </div>
             <form id="editCustomer-form">
-            <div class="modal-body">
+                <div class="modal-body">
                 <div class="form-group">
                     <label for="inputName">Name</label>
                     <input type="text" class="form-control" id="inputName" placeholder="Enter firstname">
@@ -121,7 +80,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="saveCustomer">Save</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
             </form>
@@ -140,64 +99,50 @@
     const $inputPib = $("#inputPib");
     const $inputIdNumber = $("#inputIdNumber");
 
-
     $( document ).ready(function() {
-        var table = $('#customersTable').DataTable();
+        fillTable(customers);
     });
 
-    $('.deleteCus').click( function () {
-        let id = $(this).attr("data-id");
-        let selected = $(this);
-
-        deleteCustomerAjax(id, function removeRow () {
-            removeJSON(customers, "id", id);
-            table
-                .row( selected.parents('tr') )
-                .remove()
-                .draw();
-        });
-    } );
-
-    function deleteCustomerAjax(customerId, callback) {
-        $.ajax({
-            url : "/customer/" + customerId,
-            type : "DELETE",
-            success : function(data) {
-                console.log(data);
-                if(data) callback();
-            },
-            error : function(data) {
-                console.log(data);
-            }
-        })
-    }
-
-    $('.editCus').click( function () {
-        let id = $(this).attr("data-id");
-
-        let customer = findJSONItem(customers, "id", id);
-
-        fillFormEdit(customer);
+    $('#addCus').click( function () {
 
         $("#myModal").modal();
 
     });
 
-    function fillFormEdit(customer) {
-        $inputName.val(customer.name);
-        $inputEmail.val(customer.email);
-        $inputPhone.val(customer.phone);
-        $inputAddress.val(customer.address);
-        $inputPib.val(customer.pib);
-        $inputIdNumber.val(customer.idNumber);
-    }
+    // function fillFormEdit(customer) {
+    //     $inputIdCustomer.val(customer.id);
+    //     $inputName.val(customer.name);
+    //     $inputEmail.val(customer.email);
+    //     $inputPhone.val(customer.phone);
+    //     $inputAddress.val(customer.address);
+    //     $inputPib.val(customer.pib);
+    //     $inputIdNumber.val(customer.idNumber);
+    // }
 
     function saveCustomer() {
+        let customerJson = {
+            id: '',
+            name :  $inputName.val(),
+            email :  $inputEmail.val(),
+            phone :  $inputPhone.val(),
+            address :  $inputAddress.val(),
+            pib :  $inputPib.val(),
+            idNumber :  $inputIdNumber.val()
+        };
 
+        sendAjaxRequest("POST", "/customer", customerJson, function(response) {
+            customers.push(response);
+            fillTable(customers);
+
+        }, function(res) {
+            console.error('Error while saving customer');
+            console.error(res);
+        });
     }
 
-    $("#editCustomer-form").submit(function(e){
+    $("#saveCustomer").click(function saveCustomerInfo(e){
         e.preventDefault();
+        console.log("submit");
         saveCustomer();
     });
 
@@ -214,6 +159,11 @@
         for (var i = 0; i < arr.length; i++) {
             if (arr[i].id == object.id) {
                 arr[i].name = object.name;
+                arr[i].email = object.email;
+                arr[i].phone = object.phone;
+                arr[i].address = object.address;
+                arr[i].pib = object.pib;
+                arr[i].idNumber = object.idNumber;
             }
         }
     }
@@ -227,5 +177,226 @@
         }
         return null;
     }
+
+    function sendAjaxRequest(type, url, data, onSuccess, onError) {
+        $.ajax({
+            type: type,
+            url: url,
+            data: data,
+            success: function(res) {
+                onSuccess(res);
+            },
+            error: function(res) {
+                onError(res);
+            }
+        });
+    }
+
+    function fillTable(customers) {
+
+        var tbl = '';
+        tbl +='<table class="table table-hover" id="tabela1">'
+
+        //--->create table header > start
+        tbl +='<thead>';
+        tbl +='<tr>';
+        tbl +='<th>#</th>';
+        tbl +='<th>Name</th>';
+        tbl +='<th>Email</th>';
+        tbl +='<th>Phone number</th>';
+        tbl +='<th>Address</th>';
+        tbl +='<th>Pib</th>';
+        tbl +='<th>Id number</th>';
+        tbl +='<th>Options</th>';
+        tbl +='</tr>';
+        tbl +='</thead>';
+        //--->create table header > end
+
+
+        //--->create table body > start
+        tbl +='<tbody>';
+
+        //--->create table body rows > start
+        $.each(customers, function(index, val)
+        {
+            //you can replace with your database row id
+            var row_id = val['id'];
+
+            //loop through ajax row data
+            tbl +='<tr row_id="'+row_id+'">';
+            tbl +='<td></td>';
+            tbl +='<td ><div class="row_data" col_name="name">'+val['name']+'</div></td>';
+            tbl +='<td ><div class="row_data" col_name="email">'+val['email']+'</div></td>';
+            tbl +='<td ><div class="row_data" col_name="phone">'+val['phone']+'</div></td>';
+            tbl +='<td ><div class="row_data" col_name="address">'+val['address']+'</div></td>';
+            tbl +='<td ><div class="row_data" col_name="pib">'+val['pib']+'</div></td>';
+            tbl +='<td ><div class="row_data" col_name="idNumber">'+val['idNumber']+'</div></td>';
+
+            //--->edit options > start
+            tbl +='<td>';
+
+            tbl +='<span class="btn_edit" > <a href="#" class="btn btn-link " row_id="'+row_id+'" > Edit</a> </span>';
+            tbl +='<span class="btn_delete" > <a href="#" class="btn btn-link " row_id="'+row_id+'" > Delete</a> </span>';
+
+            //only show this button if edit button is clicked
+            tbl +='<span class="btn_save"> <a href="#" class="btn btn-link"  row_id="'+row_id+'"> Save</a> | </span>';
+            tbl +='<span class="btn_cancel"> <a href="#" class="btn btn-link" row_id="'+row_id+'"> Cancel</a> | </span>';
+
+            tbl +='</td>';
+            //--->edit options > end
+
+            tbl +='</tr>';
+        });
+
+        //--->create table body rows > end
+
+        tbl +='</tbody>';
+        //--->create table body > end
+
+        tbl +='</table>';
+        //--->create data table > end
+
+        $("#tableBody").html(tbl);
+        $(document).find('.btn_save').hide();
+        $(document).find('.btn_cancel').hide();
+        $("#tabela1").DataTable().column( '1:visible' )
+            .order( 'asc' )
+            .draw();
+
+        $(".overlay").hide();
+    }
+
+    //--->button > edit > start
+    $(document).on('click', '.btn_edit', function(event)
+    {
+        event.preventDefault();
+        let tbl_row = $(this).closest('tr');
+        let close = tbl_row.parent().find('.edit-customer');
+        close.find('.btn_cancel').click();
+        tbl_row.addClass("edit-customer");
+
+        tbl_row.find('.btn_save').show();
+        tbl_row.find('.btn_cancel').show();
+        tbl_row.find('.bg-warning').first().focus();
+
+        //hide edit button
+        tbl_row.find('.btn_edit').hide();
+        tbl_row.find('.btn_delete').hide();
+
+        //make the whole row editable
+        tbl_row.find('.row_data')
+            .attr('contenteditable', 'true')
+            .addClass('bg-warning')
+            .css('padding','3px')
+
+        //--->add the original entry > start
+        tbl_row.find('.row_data').each(function(index, val)
+        {
+            //this will help in case user decided to click on cancel button
+            $(this).attr('original_entry', $(this).html());
+        });
+        //--->add the original entry > end
+
+    });
+    //--->button > edit > end
+
+    //--->button > cancel > start
+    $(document).on('click', '.btn_cancel', function(event)
+    {
+        event.preventDefault();
+
+        var tbl_row = $(this).closest('tr');
+
+        var row_id = tbl_row.attr('row_id');
+
+        tbl_row.removeClass("edit-customer");
+        //hide save and cacel buttons
+        tbl_row.find('.btn_save').hide();
+        tbl_row.find('.btn_cancel').hide();
+
+        //show edit button
+        tbl_row.find('.btn_edit').show();
+        tbl_row.find('.btn_delete').show();
+
+        // make the whole row editable
+        tbl_row.find('.row_data')
+            .attr('contenteditable', 'false')
+            .removeClass('bg-warning')
+            .css('padding','')
+
+        tbl_row.find('.row_data').each(function(index, val)
+        {
+            $(this).html( $(this).attr('original_entry') );
+        });
+    });
+    //--->button > cancel > end
+    //--->save whole row entery > start
+    $(document).on('click', '.btn_save', function(event)
+    {
+        event.preventDefault();
+        var tbl_row = $(this).closest('tr');
+
+        var row_id = tbl_row.attr('row_id');
+
+        tbl_row.removeClass("edit-customer");
+
+        //hide save and cacel buttons
+        tbl_row.find('.btn_save').hide();
+        tbl_row.find('.btn_cancel').hide();
+        tbl_row.find('.btn_delete').hide();
+
+
+        //show edit button
+        tbl_row.find('.btn_edit').show();
+        tbl_row.find('.btn_delete').show();
+
+
+        //make the whole row editable
+        tbl_row.find('.row_data')
+            .removeClass('bg-warning')
+            .css('padding','')
+
+        //--->get row data > start
+        var ajaxObj = {};
+        tbl_row.find('.row_data').each(function(index, val)
+        {
+            let col_name = $(this).attr('col_name');
+            ajaxObj[col_name]  =  $(this).html();
+        });
+        //--->get row data > end
+
+        //use the "arr"	object for your ajax call
+        $.extend(ajaxObj, {id:row_id});
+
+        sendAjaxRequest("POST", "/customer", ajaxObj, function() {
+            changeCustomerJson(customers, ajaxObj);
+            fillTable(customers);
+        }, function(res) {
+            console.error('Error while updating project\'s used at timestamp');
+            console.error(res);
+        });
+
+        //out put to show
+        // $('.post_msg').html( '<pre class="bg-success">'+JSON.stringify(arr, null, 2) +'</pre>')
+
+
+    });
+    //--->save whole row entery > end
+
+    $(document).on('click', '.btn_delete', function(event) {
+        event.preventDefault();
+        var tbl_row = $(this).closest('tr');
+
+        var row_id = tbl_row.attr('row_id');
+
+        sendAjaxRequest("DELETE", "/customer/"+ row_id, "", function () {
+            console.log("uspelo je valjda");
+            removeJSON(customers, "id", row_id);
+            fillTable(customers);
+        }, function(res) {
+            console.error('Error while updating project');
+            console.error(res);
+        });
+    });
 </script>
 </html>
