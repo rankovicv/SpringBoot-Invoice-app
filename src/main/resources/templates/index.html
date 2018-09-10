@@ -23,6 +23,7 @@
 
                 <div class="panel-heading">
                     <h1 class="panel-title">My Invoices!</h1>
+                    <h1 class="panel-title">Hi <small th:text="${loggedUser.name}"></small></h1>
                 </div>
                 <div class="panel-body">
                     <div class="table-responsive" th:if="${not #lists.isEmpty(invoices)}">

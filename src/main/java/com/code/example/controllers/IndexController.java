@@ -3,20 +3,21 @@ package com.code.example.controllers;
 import com.code.example.mail.EmailService;
 import com.code.example.persistence.entities.Customer;
 import com.code.example.persistence.entities.Invoice;
+import com.code.example.persistence.entities.User;
 import com.code.example.services.CustomerService;
 import com.code.example.services.InvoiceService;
+import com.code.example.services.UserService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.Comparator;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Created by veljko on 29.7.18.
@@ -35,17 +36,21 @@ public class IndexController {
     private final @NonNull
     EmailService emailService;
 
-    @GetMapping({"", "/", "/index"})
+    private final @NonNull
+    UserService userService;
+
+    @GetMapping({"/index"})
     public String getIndexPage(Model model) {
 
         log.debug("Getting Index page");
 
         Set<Invoice> invoices = invoiceService.getInvoices();
-        invoices.stream()
-                .sorted(Comparator.comparing(Invoice::getId))
-                .collect(Collectors.toList());
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findUserByUsername(auth.getName());
 
         model.addAttribute("invoices", invoices);
+        model.addAttribute("loggedUser", user);
 //        SimpleMailMessage message = new SimpleMailMessage();
 //        message.setText(
 //                "This is the test email template for your email:" + invoices.iterator().next().getInvoiceNumber());
@@ -61,8 +66,11 @@ public class IndexController {
         log.debug("Customers page open");
 
         Set<Customer> customerSet = customerService.getCustomers();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findUserByUsername(auth.getName());
 
         model.addAttribute("customers", customerSet);
+        model.addAttribute("loggedUser", user);
 
         return "customers";
     }
