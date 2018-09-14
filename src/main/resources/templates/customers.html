@@ -91,6 +91,7 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
     var customers = /*[[${customers}]]*/ null;
+    /*]]>*/
 
     const $inputName = $("#inputName");
     const $inputEmail = $("#inputEmail");
@@ -108,16 +109,6 @@
         $("#myModal").modal();
 
     });
-
-    // function fillFormEdit(customer) {
-    //     $inputIdCustomer.val(customer.id);
-    //     $inputName.val(customer.name);
-    //     $inputEmail.val(customer.email);
-    //     $inputPhone.val(customer.phone);
-    //     $inputAddress.val(customer.address);
-    //     $inputPib.val(customer.pib);
-    //     $inputIdNumber.val(customer.idNumber);
-    // }
 
     function saveCustomer() {
         let customerJson = {

@@ -7,7 +7,7 @@ import com.code.example.persistence.entities.User;
  */
 public interface UserService {
 
-    User findUserByUsername(String email);
+    User findUserByEmail(String email);
 
     void saveUser(User user);
 

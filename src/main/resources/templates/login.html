@@ -15,37 +15,41 @@
 </head>
 <body>
 <div class="container">
-    <form th:action="@{/authenticate}" method="POST" class="form-signin">
-        <h3 class="form-signin-heading" th:text="Welcome"></h3>
-        <br/>
+    <div class="row">
+        <div class="col-md-6">
+            <form th:action="@{/authenticate}" method="POST" class="form-signin">
+                <h3 class="form-signin-heading" th:text="Welcome"></h3>
+                <br/>
 
-        <!-- User name -->
-        <div style="margin-bottom: 25px" class="input-group">
-            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                <!-- User name -->
+                <div style="margin-bottom: 25px" class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
 
-            <input type="text" name="username" placeholder="username" class="form-control">
+                    <input type="text" name="username" placeholder="username" class="form-control">
+                </div>
+
+                <!-- Password -->
+                <div style="margin-bottom: 25px" class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+
+                    <input type="password" name="password" placeholder="password" class="form-control" >
+                </div>
+
+                <!-- Login/Submit Button -->
+                <div style="margin-top: 10px" class="form-group">
+                    <div class="col-sm-6 controls">
+                        <button type="submit" class="btn btn-success">Login</button>
+                    </div>
+                </div>
+
+                <!-- I'm manually adding tokens ... Bro! -->
+
+                <!--<input type="hidden"-->
+                <!--th:name="${_csrf.parameterName}"-->
+                <!--th:value="${_csrf.token}" />-->
+            </form>
         </div>
-
-        <!-- Password -->
-        <div style="margin-bottom: 25px" class="input-group">
-            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-
-            <input type="password" name="password" placeholder="password" class="form-control" >
-        </div>
-
-        <!-- Login/Submit Button -->
-        <div style="margin-top: 10px" class="form-group">
-            <div class="col-sm-6 controls">
-                <button type="submit" class="btn btn-success">Login</button>
-            </div>
-        </div>
-
-        <!-- I'm manually adding tokens ... Bro! -->
-
-        <input type="hidden"
-               th:name="${_csrf.parameterName}"
-               th:value="${_csrf.token}" />
-    </form>
+    </div>
 </div>
 </body>
 </html>

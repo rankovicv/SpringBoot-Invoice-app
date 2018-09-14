@@ -40,28 +40,30 @@ public class CustomerControllerTest {
 
         mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
     }
+//
+//    @Test
+//    public void testGetNewCustomerForm() throws Exception {
+//
+//        mockMvc.perform(get("/customer/new"))
+//                .andExpect(status().isOk())
+//                .andExpect(view().name("customer/customerform"))
+//                .andExpect(model().attributeExists("customer"));
+//    }
+//
+//    @Test
+//    public void testGetUpdateView() throws Exception {
+//        Customer customer = new Customer();
+//        customer.setId(2L);
+//
+//        when(customerService.findById(anyLong())).thenReturn(customer);
+//
+//        mockMvc.perform(get("/customer/1/update"))
+//                .andExpect(status().isOk())
+//                .andExpect(view().name("customer/customerform"))
+//                .andExpect(model().attributeExists("customer"));
+//    }
 
-    @Test
-    public void testGetNewCustomerForm() throws Exception {
 
-        mockMvc.perform(get("/customer/new"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("customer/customerform"))
-                .andExpect(model().attributeExists("customer"));
-    }
-
-    @Test
-    public void testGetUpdateView() throws Exception {
-        Customer customer = new Customer();
-        customer.setId(2L);
-
-        when(customerService.findById(anyLong())).thenReturn(customer);
-
-        mockMvc.perform(get("/customer/1/update"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("customer/customerform"))
-                .andExpect(model().attributeExists("customer"));
-    }
 
 //    @Test
 //    public void testGetNewCustomerForm() throws Exception {

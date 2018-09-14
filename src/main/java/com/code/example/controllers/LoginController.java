@@ -44,7 +44,7 @@ public class LoginController {
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
     public ModelAndView createNewUser(@Valid User user, BindingResult bindingResult) {
         ModelAndView modelAndView = new ModelAndView();
-        User userExists = userService.findUserByUsername(user.getUsername());
+        User userExists = userService.findUserByEmail(user.getUsername());
         if (userExists != null) {
             bindingResult
                     .rejectValue("email", "error.user",
@@ -60,6 +60,11 @@ public class LoginController {
 
         }
         return modelAndView;
+    }
+
+    @RequestMapping(value = "/access-denied", method = RequestMethod.GET)
+    public String returnDeniedPage() {
+        return "access-denied";
     }
 
 }

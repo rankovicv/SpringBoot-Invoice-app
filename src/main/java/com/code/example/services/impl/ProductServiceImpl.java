@@ -2,6 +2,7 @@ package com.code.example.services.impl;
 
 import com.code.example.exceptions.NotFoundException;
 import com.code.example.persistence.entities.Product;
+import com.code.example.persistence.entities.User;
 import com.code.example.persistence.repositories.ProductRepository;
 import com.code.example.services.ProductService;
 import lombok.NonNull;
@@ -31,6 +32,15 @@ public class ProductServiceImpl implements ProductService {
 
         Set<Product> productSet = new HashSet<>();
         productRepository.findAll().iterator().forEachRemaining(productSet::add);
+        return productSet;
+    }
+
+    @Override
+    public Set<Product> getProductsByUser(Long userId) {
+
+        Set<Product> productSet = new HashSet<>();
+        productRepository.findByUser_Id(userId).iterator().forEachRemaining(productSet::add);
+
         return productSet;
     }
 

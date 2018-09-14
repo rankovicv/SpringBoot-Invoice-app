@@ -18,7 +18,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private int id;
+    private Long id;
 
     @Email(message = "*Please provide a valid Email")
     @NotEmpty(message = "*Please provide an email")
@@ -34,10 +34,9 @@ public class User {
     @NotEmpty(message = "*Please provide your last name")
     private String lastName;
 
-    private int active;
+    private boolean active;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles;
+    @ManyToOne
+    private Role role;
 
 }

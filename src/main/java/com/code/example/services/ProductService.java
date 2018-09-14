@@ -11,6 +11,8 @@ public interface ProductService {
 
     Set<Product> getProducts();
 
+    Set<Product> getProductsByUser(Long userId);
+
     Product findById(Long id);
 
     Product saveProduct(Product product);

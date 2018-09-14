@@ -2,6 +2,7 @@ package com.code.example.services.impl;
 
 import com.code.example.exceptions.NotFoundException;
 import com.code.example.persistence.entities.Product;
+import com.code.example.persistence.entities.User;
 import com.code.example.persistence.repositories.ProductRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,6 +48,26 @@ public class ProductServiceImplTest {
 
         assertEquals(productSet.size(), 1);
         verify(productRepository, times(1)).findAll();
+        verify(productRepository, never()).findById(anyLong());
+    }
+
+    @Test
+    public void getProductsTest1() {
+
+        Product product = new Product();
+        User user = new User();
+        user.setId(1L);
+        product.setUser(user);
+        HashSet productData = new HashSet();
+        productData.add(product);
+
+        when(productService.getProductsByUser(1L)).thenReturn(productData);
+
+        Set<Product> productSet = productService.getProductsByUser(1L);
+
+        assertEquals(productSet.size(), 1);
+        assertEquals(user.getId(), productSet.iterator().next().getUser().getId());
+        verify(productRepository, times(1)).findByUser_Id(user.getId());
         verify(productRepository, never()).findById(anyLong());
     }
 
