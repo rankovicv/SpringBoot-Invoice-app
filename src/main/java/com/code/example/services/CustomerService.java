@@ -11,6 +11,8 @@ public interface CustomerService {
 
     Set<Customer> getCustomers();
 
+    Set<Customer> getCustomersByUser(Long userId);
+
     Customer findById(Long id);
 
     Customer saveCustomer(Customer customer);

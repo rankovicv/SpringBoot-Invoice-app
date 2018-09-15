@@ -34,16 +34,303 @@
                 <!--<div class="overlay">-->
                     <!--<div id="loader"></div>-->
                 <!--</div>-->
-                <div class="panel-body" id="tableProducts">
+                <div class="panel-body" id="tablePanel">
                 </div>
             </div>
         </div>
+    </div>
+</div>
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add Product</h4>
+            </div>
+            <form id="addProduct-form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="inputName">Name</label>
+                        <input type="text" class="form-control" id="inputName" placeholder="Enter name of product">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="saveProduct">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+
     </div>
 </div>
 <script th:inline="javascript">
     /*<![CDATA[*/
     var products = /*[[${products}]]*/ null;
 
+    const $inputName = $("#inputName");
+
+    $( document ).ready(function() {
+        fillTable(products);
+    });
+
+    $('#addProduct').click( function () {
+
+        $("#myModal").modal();
+
+    });
+
+    $("#saveProduct").click(function saveProductInfo(e){
+        e.preventDefault();
+        saveProduct();
+        $("#addProduct-form").trigger("reset");;
+    });
+
+
+    function saveProduct() {
+        let productJson = {
+            id: '',
+            name :  $inputName.val()
+        };
+
+        sendAjaxRequest("POST", "/product", productJson, function(response) {
+            products.push(response);
+            fillTable(products);
+
+        }, function(res) {
+            console.error('Error while saving product');
+            console.error(res);
+        });
+    }
+
+    function fillBodyTable(data, callback) {
+
+        let tbl = '';
+        tbl +='<tbody id="bodyCustomerTable">';
+        $.each(data, function(index, val)
+        {
+            //you can replace with your database row id
+            var row_id = val['id'];
+
+            //loop through ajax row data
+            tbl +='<tr row_id="'+row_id+'">';
+            tbl +='<td></td>';
+            tbl +='<td ><div class="row_data" col_name="name">'+val['name']+'</div></td>';
+
+            //--->edit options > start
+            tbl +='<td>';
+
+            tbl +='<span class="btn_edit" > <a href="#" class="btn btn-link " row_id="'+row_id+'" > Edit</a> </span>';
+            tbl +='<span class="btn_delete" > <a href="#" class="btn btn-link " row_id="'+row_id+'" > Delete</a> </span>';
+
+            //only show this button if edit button is clicked
+            tbl +='<span class="btn_save"> <a href="#" class="btn btn-link"  row_id="'+row_id+'"> Save</a> | </span>';
+            tbl +='<span class="btn_cancel"> <a href="#" class="btn btn-link" row_id="'+row_id+'"> Cancel</a> | </span>';
+
+            tbl +='</td>';
+            //--->edit options > end
+
+            tbl +='</tr>';
+        });
+
+        tbl +='</tbody>';
+        callback(tbl);
+
+    }
+
+    function fillTable(data) {
+
+        var tbl = '';
+        tbl +='<table class="table table-hover" id="tableProducts">'
+
+        //--->create table header > start
+        tbl +='<thead>';
+        tbl +='<tr>';
+        tbl +='<th>#</th>';
+        tbl +='<th>Name</th>';
+        tbl +='<th>Options</th>';
+        tbl +='</tr>';
+        tbl +='</thead>';
+
+        //--->create table body rows > start
+        fillBodyTable(data, function (response) {
+            tbl += response;
+        });
+
+        //--->create table body rows > end
+
+        //--->create table body > end
+
+        tbl +='</table>';
+        //--->create data table > end
+
+        $("#tablePanel").html(tbl);
+        $(document).find('.btn_save').hide();
+        $(document).find('.btn_cancel').hide();
+        $("#tableProducts").DataTable().column( '1:visible' )
+            .order( 'asc' )
+            .draw();
+
+        $(".overlay").hide();
+    }
+
+    //--->button > edit > start
+    $(document).on('click', '.btn_edit', function(event)
+    {
+        event.preventDefault();
+        let tbl_row = $(this).closest('tr');
+        let close = tbl_row.parent().find('.edit-product');
+        close.find('.btn_cancel').click();
+        tbl_row.addClass("edit-product");
+
+        toggleButtons(tbl_row);
+
+        //make the whole row editable
+        tbl_row.find('.row_data')
+            .attr('contenteditable', 'true')
+            .addClass('bg-warning')
+            .css('padding','3px')
+
+        //--->add the original entry > start
+        tbl_row.find('.row_data').each(function(index, val)
+        {
+            //this will help in case user decided to click on cancel button
+            $(this).attr('original_entry', $(this).html());
+        });
+        //--->add the original entry > end
+
+    });
+    //--->button > edit > end
+
+    //--->button > cancel > start
+    $(document).on('click', '.btn_cancel', function(event)
+    {
+        event.preventDefault();
+
+        var tbl_row = $(this).closest('tr');
+
+        tbl_row.removeClass("edit-product");
+
+        toggleButtons(tbl_row);
+        //hide save and cacel buttons
+
+
+        // make the whole row editable
+        tbl_row.find('.row_data')
+            .attr('contenteditable', 'false')
+            .removeClass('bg-warning')
+            .css('padding','')
+
+        tbl_row.find('.row_data').each(function(index, val)
+        {
+            $(this).html( $(this).attr('original_entry') );
+        });
+    });
+    //--->button > cancel > end
+    //--->save whole row entery > start
+    $(document).on('click', '.btn_save', function(event)
+    {
+        event.preventDefault();
+        var tbl_row = $(this).closest('tr');
+
+        var row_id = tbl_row.attr('row_id');
+
+        tbl_row.removeClass("edit-product");
+
+        //hide save and cacel buttons
+        toggleButtons(tbl_row);
+
+        //make the whole row editable
+        tbl_row.find('.row_data')
+            .removeClass('bg-warning')
+            .css('padding','')
+
+        //--->get row data > start
+        var ajaxObj = {};
+        tbl_row.find('.row_data').each(function(index, val)
+        {
+            let col_name = $(this).attr('col_name');
+            ajaxObj[col_name]  =  $(this).html();
+        });
+        //--->get row data > end
+
+        //use the "arr"	object for your ajax call
+        $.extend(ajaxObj, {id:row_id});
+
+        sendAjaxRequest("POST", "/product", ajaxObj, function() {
+            changeProductsJson(products, ajaxObj);
+            fillTable(products);
+        }, function(res) {
+            console.error('Error while updating project\'s used at timestamp');
+            console.error(res);
+        });
+
+        //out put to show
+        // $('.post_msg').html( '<pre class="bg-success">'+JSON.stringify(arr, null, 2) +'</pre>')
+
+
+    });
+    //--->save whole row entery > end
+
+    $(document).on('click', '.btn_delete', function(event) {
+        event.preventDefault();
+        var tbl_row = $(this).closest('tr');
+
+        var row_id = tbl_row.attr('row_id');
+
+        sendAjaxRequest("DELETE", "/product/"+ row_id, "", function (res) {
+            if(res) {
+                removeJSON(products, "id", row_id);
+                fillTable(products);
+            }
+        }, function(res) {
+            console.error('Error while deleting customer');
+            console.error(res);
+        });
+    });
+
+    function toggleButtons(tbl_row){
+        tbl_row.find('.btn_save').toggle();
+        tbl_row.find('.btn_cancel').toggle();
+
+        //show edit button
+        tbl_row.find('.btn_edit').toggle();
+        tbl_row.find('.btn_delete').toggle();
+    }
+
+    function sendAjaxRequest(type, url, data, onSuccess, onError) {
+        $.ajax({
+            type: type,
+            url: url,
+            data: data,
+            success: function(res) {
+                onSuccess(res);
+            },
+            error: function(res) {
+                onError(res);
+            }
+        });
+    }
+
+    function removeJSON(arr, key, value) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i][key] == value || arr[i][key] === value) {
+                delete arr[i];
+                arr.splice(i, 1);
+                return true;
+            }
+        }
+        return null;
+    }
+
+    function changeProductsJson(arr, object) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i].id == object.id) {
+                arr[i].name = object.name;
+            }
+        }
+    }
 
     /*]]>*/
 </script>

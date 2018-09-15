@@ -36,6 +36,15 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public Set<Customer> getCustomersByUser(Long userId) {
+        log.debug("Get customer by user service");
+
+        Set<Customer> customerSet = new HashSet<>();
+        customerRepository.findByUser_Id(userId).iterator().forEachRemaining(customerSet::add);
+        return customerSet;
+    }
+
+    @Override
     public Customer findById(Long id) {
 
         Optional<Customer> customer = customerRepository.findById(id);

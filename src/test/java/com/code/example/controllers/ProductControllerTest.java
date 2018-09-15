@@ -95,6 +95,17 @@ public class ProductControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    public void testDeleteProduct() {
+
+        Product product = new Product();
+        product.setId(1L);
+        product.setName("Novi product");
+
+
+
+    }
+
     public static String asJsonString(final Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);

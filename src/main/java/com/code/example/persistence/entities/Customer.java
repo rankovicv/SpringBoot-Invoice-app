@@ -19,7 +19,7 @@ public class Customer {
     private Long id;
 
     @NotNull
-    @Size(min=2, max=30)
+    @Size(min=2, max=40)
     private String name;
 
     private String email;

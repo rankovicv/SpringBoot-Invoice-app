@@ -73,12 +73,12 @@ public class IndexController {
 
         log.debug("Customers page open");
 
-        Set<Customer> customerSet = customerService.getCustomers();
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findUserByEmail(auth.getName());
+        CurrentUser myUserDetails = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Set<Customer> customerSet = customerService.getCustomersByUser(myUserDetails.getUserId());
 
         model.addAttribute("customers", customerSet);
-        model.addAttribute("loggedUser", user);
+//        model.addAttribute("loggedUser", user);
+
 
         return "customers";
     }

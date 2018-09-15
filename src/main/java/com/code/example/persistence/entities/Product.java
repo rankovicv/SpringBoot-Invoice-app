@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * Created by veljko on 4.8.18.
@@ -16,6 +18,8 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
+    @Size(min=2, max=40)
     private String name;
 
     @ManyToOne
@@ -24,7 +28,7 @@ public class Product {
     private User user;
 
 //    private Integer quantity;
-//
+
 //    private Double price;
 }
 

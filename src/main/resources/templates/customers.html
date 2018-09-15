@@ -34,7 +34,7 @@
                 <div class="overlay">
                     <div id="loader"></div>
                 </div>
-                <div class="panel-body" id="tableBody">
+                <div class="panel-body" id="tablePanel">
                 </div>
             </div>
         </div>
@@ -133,8 +133,8 @@
 
     $("#saveCustomer").click(function saveCustomerInfo(e){
         e.preventDefault();
-        console.log("submit");
         saveCustomer();
+        $("#editCustomer-form").trigger("reset");;
     });
 
     function findJSONItem(arr, key, value) {
@@ -183,31 +183,10 @@
         });
     }
 
-    function fillTable(customers) {
+    function fillBodyTable(customers, callback) {
 
-        var tbl = '';
-        tbl +='<table class="table table-hover" id="tabela1">'
-
-        //--->create table header > start
-        tbl +='<thead>';
-        tbl +='<tr>';
-        tbl +='<th>#</th>';
-        tbl +='<th>Name</th>';
-        tbl +='<th>Email</th>';
-        tbl +='<th>Phone number</th>';
-        tbl +='<th>Address</th>';
-        tbl +='<th>Pib</th>';
-        tbl +='<th>Id number</th>';
-        tbl +='<th>Options</th>';
-        tbl +='</tr>';
-        tbl +='</thead>';
-        //--->create table header > end
-
-
-        //--->create table body > start
-        tbl +='<tbody>';
-
-        //--->create table body rows > start
+        let tbl = '';
+        tbl +='<tbody id="bodyCustomerTable">';
         $.each(customers, function(index, val)
         {
             //you can replace with your database row id
@@ -239,18 +218,46 @@
             tbl +='</tr>';
         });
 
+        tbl +='</tbody>';
+        callback(tbl);
+
+    }
+
+    function fillTable(customers) {
+
+        var tbl = '';
+        tbl +='<table class="table table-hover" id="tableCustomer">'
+
+        //--->create table header > start
+        tbl +='<thead>';
+        tbl +='<tr>';
+        tbl +='<th>#</th>';
+        tbl +='<th>Name</th>';
+        tbl +='<th>Email</th>';
+        tbl +='<th>Phone number</th>';
+        tbl +='<th>Address</th>';
+        tbl +='<th>Pib</th>';
+        tbl +='<th>Id number</th>';
+        tbl +='<th>Options</th>';
+        tbl +='</tr>';
+        tbl +='</thead>';
+
+        //--->create table body rows > start
+        fillBodyTable(customers, function (response) {
+            tbl += response;
+        });
+
         //--->create table body rows > end
 
-        tbl +='</tbody>';
         //--->create table body > end
 
         tbl +='</table>';
         //--->create data table > end
 
-        $("#tableBody").html(tbl);
+        $("#tablePanel").html(tbl);
         $(document).find('.btn_save').hide();
         $(document).find('.btn_cancel').hide();
-        $("#tabela1").DataTable().column( '1:visible' )
+        $("#tableCustomer").DataTable().column( '1:visible' )
             .order( 'asc' )
             .draw();
 
@@ -266,13 +273,7 @@
         close.find('.btn_cancel').click();
         tbl_row.addClass("edit-customer");
 
-        tbl_row.find('.btn_save').show();
-        tbl_row.find('.btn_cancel').show();
-        tbl_row.find('.bg-warning').first().focus();
-
-        //hide edit button
-        tbl_row.find('.btn_edit').hide();
-        tbl_row.find('.btn_delete').hide();
+        hideButtons(tbl_row);
 
         //make the whole row editable
         tbl_row.find('.row_data')
@@ -298,16 +299,11 @@
 
         var tbl_row = $(this).closest('tr');
 
-        var row_id = tbl_row.attr('row_id');
-
         tbl_row.removeClass("edit-customer");
-        //hide save and cacel buttons
-        tbl_row.find('.btn_save').hide();
-        tbl_row.find('.btn_cancel').hide();
 
-        //show edit button
-        tbl_row.find('.btn_edit').show();
-        tbl_row.find('.btn_delete').show();
+        hideButtons(tbl_row);
+        //hide save and cacel buttons
+
 
         // make the whole row editable
         tbl_row.find('.row_data')
@@ -332,15 +328,7 @@
         tbl_row.removeClass("edit-customer");
 
         //hide save and cacel buttons
-        tbl_row.find('.btn_save').hide();
-        tbl_row.find('.btn_cancel').hide();
-        tbl_row.find('.btn_delete').hide();
-
-
-        //show edit button
-        tbl_row.find('.btn_edit').show();
-        tbl_row.find('.btn_delete').show();
-
+        hideButtons(tbl_row);
 
         //make the whole row editable
         tbl_row.find('.row_data')
@@ -381,13 +369,21 @@
         var row_id = tbl_row.attr('row_id');
 
         sendAjaxRequest("DELETE", "/customer/"+ row_id, "", function () {
-            console.log("uspelo je valjda");
             removeJSON(customers, "id", row_id);
             fillTable(customers);
         }, function(res) {
-            console.error('Error while updating project');
+            console.error('Error while deleting customer');
             console.error(res);
         });
     });
+
+    function hideButtons(tbl_row){
+        tbl_row.find('.btn_save').toggle();
+        tbl_row.find('.btn_cancel').toggle();
+
+        //show edit button
+        tbl_row.find('.btn_edit').toggle();
+        tbl_row.find('.btn_delete').toggle();
+    }
 </script>
 </html>

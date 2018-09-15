@@ -24,11 +24,23 @@ public class ProductController {
     ProductService productService;
 
     @PostMapping()
-    public @ResponseBody Product addNewProduct(@RequestBody Product product) {
+    public @ResponseBody Product addNewProduct(@ModelAttribute Product product) {
+
         CurrentUser myUserDetails = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = new User();
         user.setId(myUserDetails.getUserId());
         product.setUser(user);
+
         return productService.saveProduct(product);
+    }
+
+    @DeleteMapping("/{id}")
+    public @ResponseBody boolean deleteById(@PathVariable String id) {
+
+        log.debug("Deleting product id: " + id);
+
+        productService.deleteById(Long.valueOf(id));
+
+        return true;
     }
 }
