@@ -23,23 +23,25 @@
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     <div class="panel-title-two">
-                        <h1 class="panel-title">All Products!</h1>
+                        <h1 class="panel-title">All Customers!</h1>
                     </div>
                     <div class="panel-btn">
-                        <a href="#" class="btn btn-info" id="addProduct">
-                            Add product
+                        <a href="#" class="btn btn-info" id="addCus">
+                            Add customer
                         </a>
                     </div>
                 </div>
-                <!--<div class="overlay">-->
-                    <!--<div id="loader"></div>-->
-                <!--</div>-->
+                <div class="overlay">
+                    <div id="loader"></div>
+                </div>
                 <div class="panel-body" id="tablePanel">
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+</body>
 <div id="myModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
 
@@ -47,19 +49,40 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Add Product</h4>
+                <h4 class="modal-title">Edit</h4>
             </div>
-            <form id="addProduct-form">
+            <form id="editCustomer-form">
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label for="inputName">Name</label>
-                        <input type="text" class="form-control" id="inputName" placeholder="Enter name of product">
-                    </div>
+                <div class="form-group">
+                    <label for="inputName">Name</label>
+                    <input type="text" class="form-control" id="inputName" placeholder="Enter firstname">
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="saveProduct">Save</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <div class="form-group">
+                    <label for="inputEmail">Email</label>
+                    <input type="email" class="form-control" id="inputEmail" placeholder="Enter email">
+                    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
                 </div>
+                <div class="form-group">
+                    <label for="inputPhone">Phone number</label>
+                    <input type="tel" class="form-control" id="inputPhone" placeholder="Enter phone">
+                </div>
+                <div class="form-group">
+                    <label for="inputAddress">Address</label>
+                    <input type="text" class="form-control" id="inputAddress" placeholder="Enter address">
+                </div>
+                <div class="form-group">
+                    <label for="inputPib">Pib</label>
+                    <input type="text" class="form-control" id="inputPib" placeholder="Enter pib">
+                </div>
+                <div class="form-group">
+                    <label for="inputIdNumber">Id Number</label>
+                    <input type="text" class="form-control" id="inputIdNumber" placeholder="Enter id number">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="saveCustomer">Save</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
             </form>
         </div>
 
@@ -67,48 +90,106 @@
 </div>
 <script th:inline="javascript">
     /*<![CDATA[*/
-    var products = /*[[${products}]]*/ null;
+    var customers = /*[[${customers}]]*/ null;
+
 
     const $inputName = $("#inputName");
+    const $inputEmail = $("#inputEmail");
+    const $inputPhone = $("#inputPhone");
+    const $inputAddress = $("#inputAddress");
+    const $inputPib = $("#inputPib");
+    const $inputIdNumber = $("#inputIdNumber");
 
     $( document ).ready(function() {
-        fillTable(products);
+        fillTable(customers);
     });
 
-    $('#addProduct').click( function () {
+    $('#addCus').click( function () {
 
         $("#myModal").modal();
 
     });
 
-    $("#saveProduct").click(function saveProductInfo(e){
-        e.preventDefault();
-        saveProduct();
-        $("#addProduct-form").trigger("reset");;
-    });
-
-
-    function saveProduct() {
-        let productJson = {
-            id: '',
-            name :  $inputName.val()
+    function saveCustomer() {
+        let customerJson = {
+            // id: '',
+            name :  $inputName.val(),
+            email :  $inputEmail.val(),
+            phone :  $inputPhone.val(),
+            address :  $inputAddress.val(),
+            pib :  $inputPib.val(),
+            idNumber :  $inputIdNumber.val()
         };
 
-        sendAjaxRequest("POST", "/product", productJson, function(response) {
-            products.push(response);
-            fillTable(products);
+        sendAjaxRequest("POST", "rest/customer", customerJson, function(response) {
+            customers.push(response);
+            fillTable(customers);
 
         }, function(res) {
-            console.error('Error while saving product');
+            console.error('Error while saving customer');
             console.error(res);
         });
     }
 
-    function fillBodyTable(data, callback) {
+    $("#saveCustomer").click(function saveCustomerInfo(e){
+        e.preventDefault();
+        saveCustomer();
+        $("#editCustomer-form").trigger("reset");;
+    });
+
+    function findJSONItem(arr, key, value) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i][key] == value) {
+                return(arr[i]);
+            }
+        }
+        return(-1);
+    }
+
+    function changeCustomerJson(arr, object) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i].id == object.id) {
+                arr[i].name = object.name;
+                arr[i].email = object.email;
+                arr[i].phone = object.phone;
+                arr[i].address = object.address;
+                arr[i].pib = object.pib;
+                arr[i].idNumber = object.idNumber;
+            }
+        }
+    }
+    function removeJSON(arr, key, value) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i][key] == value || arr[i][key] === value) {
+                delete arr[i];
+                arr.splice(i, 1);
+                return true;
+            }
+        }
+        return null;
+    }
+
+    function sendAjaxRequest(type, url, data, onSuccess, onError) {
+        $.ajax({
+            type: type,
+            url: url,
+            data: JSON.stringify(data),
+            contentType : 'application/json; charset=utf-8',
+            dataType : 'json',
+            success: function(res) {
+                onSuccess(res);
+            },
+            error: function(res) {
+                onError(res);
+            }
+        });
+    }
+
+    function fillBodyTable(customers, callback) {
 
         let tbl = '';
         tbl +='<tbody id="bodyCustomerTable">';
-        $.each(data, function(index, val)
+        $.each(customers, function(index, val)
         {
             //you can replace with your database row id
             var row_id = val['id'];
@@ -117,6 +198,11 @@
             tbl +='<tr row_id="'+row_id+'">';
             tbl +='<td></td>';
             tbl +='<td ><div class="row_data" col_name="name">'+val['name']+'</div></td>';
+            tbl +='<td ><div class="row_data" col_name="email">'+val['email']+'</div></td>';
+            tbl +='<td ><div class="row_data" col_name="phone">'+val['phone']+'</div></td>';
+            tbl +='<td ><div class="row_data" col_name="address">'+val['address']+'</div></td>';
+            tbl +='<td ><div class="row_data" col_name="pib">'+val['pib']+'</div></td>';
+            tbl +='<td ><div class="row_data" col_name="idNumber">'+val['idNumber']+'</div></td>';
 
             //--->edit options > start
             tbl +='<td>';
@@ -139,22 +225,27 @@
 
     }
 
-    function fillTable(data) {
+    function fillTable(customers) {
 
         var tbl = '';
-        tbl +='<table class="table table-hover" id="tableProducts">'
+        tbl +='<table class="table table-hover" id="tableCustomer">'
 
         //--->create table header > start
         tbl +='<thead>';
         tbl +='<tr>';
         tbl +='<th>#</th>';
         tbl +='<th>Name</th>';
+        tbl +='<th>Email</th>';
+        tbl +='<th>Phone number</th>';
+        tbl +='<th>Address</th>';
+        tbl +='<th>Pib</th>';
+        tbl +='<th>Id number</th>';
         tbl +='<th>Options</th>';
         tbl +='</tr>';
         tbl +='</thead>';
 
         //--->create table body rows > start
-        fillBodyTable(data, function (response) {
+        fillBodyTable(customers, function (response) {
             tbl += response;
         });
 
@@ -168,7 +259,7 @@
         $("#tablePanel").html(tbl);
         $(document).find('.btn_save').hide();
         $(document).find('.btn_cancel').hide();
-        $("#tableProducts").DataTable().column( '1:visible' )
+        $("#tableCustomer").DataTable().column( '1:visible' )
             .order( 'asc' )
             .draw();
 
@@ -180,11 +271,11 @@
     {
         event.preventDefault();
         let tbl_row = $(this).closest('tr');
-        let close = tbl_row.parent().find('.edit-product');
+        let close = tbl_row.parent().find('.edit-customer');
         close.find('.btn_cancel').click();
-        tbl_row.addClass("edit-product");
+        tbl_row.addClass("edit-customer");
 
-        toggleButtons(tbl_row);
+        hideButtons(tbl_row);
 
         //make the whole row editable
         tbl_row.find('.row_data')
@@ -210,9 +301,9 @@
 
         var tbl_row = $(this).closest('tr');
 
-        tbl_row.removeClass("edit-product");
+        tbl_row.removeClass("edit-customer");
 
-        toggleButtons(tbl_row);
+        hideButtons(tbl_row);
         //hide save and cacel buttons
 
 
@@ -236,10 +327,10 @@
 
         var row_id = tbl_row.attr('row_id');
 
-        tbl_row.removeClass("edit-product");
+        tbl_row.removeClass("edit-customer");
 
         //hide save and cacel buttons
-        toggleButtons(tbl_row);
+        hideButtons(tbl_row);
 
         //make the whole row editable
         tbl_row.find('.row_data')
@@ -258,9 +349,9 @@
         //use the "arr"	object for your ajax call
         $.extend(ajaxObj, {id:row_id});
 
-        sendAjaxRequest("POST", "/product", ajaxObj, function() {
-            changeProductsJson(products, ajaxObj);
-            fillTable(products);
+        sendAjaxRequest("POST", "rest/customer", ajaxObj, function() {
+            changeCustomerJson(customers, ajaxObj);
+            fillTable(customers);
         }, function(res) {
             console.error('Error while updating project\'s used at timestamp');
             console.error(res);
@@ -279,18 +370,16 @@
 
         var row_id = tbl_row.attr('row_id');
 
-        sendAjaxRequest("DELETE", "/product/"+ row_id, "", function (res) {
-            if(res) {
-                removeJSON(products, "id", row_id);
-                fillTable(products);
-            }
+        sendAjaxRequest("DELETE", "rest/customer/"+ row_id, "", function () {
+            removeJSON(customers, "id", row_id);
+            fillTable(customers);
         }, function(res) {
             console.error('Error while deleting customer');
             console.error(res);
         });
     });
 
-    function toggleButtons(tbl_row){
+    function hideButtons(tbl_row){
         tbl_row.find('.btn_save').toggle();
         tbl_row.find('.btn_cancel').toggle();
 
@@ -298,41 +387,6 @@
         tbl_row.find('.btn_edit').toggle();
         tbl_row.find('.btn_delete').toggle();
     }
-
-    function sendAjaxRequest(type, url, data, onSuccess, onError) {
-        $.ajax({
-            type: type,
-            url: url,
-            data: data,
-            success: function(res) {
-                onSuccess(res);
-            },
-            error: function(res) {
-                onError(res);
-            }
-        });
-    }
-
-    function removeJSON(arr, key, value) {
-        for (var i = 0; i < arr.length; i++) {
-            if (arr[i][key] == value || arr[i][key] === value) {
-                delete arr[i];
-                arr.splice(i, 1);
-                return true;
-            }
-        }
-        return null;
-    }
-
-    function changeProductsJson(arr, object) {
-        for (var i = 0; i < arr.length; i++) {
-            if (arr[i].id == object.id) {
-                arr[i].name = object.name;
-            }
-        }
-    }
-
     /*]]>*/
 </script>
-</body>
 </html>

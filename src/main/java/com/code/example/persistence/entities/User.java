@@ -34,8 +34,13 @@ public class User {
     @NotEmpty(message = "*Please provide your last name")
     private String lastName;
 
-    private boolean active;
+    private boolean enabled;
 
     @ManyToOne
     private Role role;
+
+    public User() {
+        super();
+        this.enabled=false;
+    }
 }

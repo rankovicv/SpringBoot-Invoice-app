@@ -2,8 +2,12 @@ package com.code.example.services.impl;
 
 import com.code.example.persistence.entities.Role;
 import com.code.example.persistence.entities.User;
+import com.code.example.persistence.entities.UserCompany;
+import com.code.example.persistence.entities.VerificationToken;
 import com.code.example.persistence.repositories.RoleRepository;
+import com.code.example.persistence.repositories.UserCompanyRepository;
 import com.code.example.persistence.repositories.UserRepository;
+import com.code.example.persistence.repositories.VerificationTokenRepository;
 import com.code.example.services.UserService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.Calendar;
+import java.util.UUID;
 
 /**
  * Created by veljko on 9.9.18.
@@ -29,8 +33,18 @@ public class UserServiceImpl implements UserService {
     private final @NonNull
     RoleRepository roleRepository;
 
+    private final @NonNull
+    UserCompanyRepository userCompanyRepository;
+
+    private final @NonNull
+    VerificationTokenRepository tokenRepository;
+
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    public static final String TOKEN_INVALID = "invalidToken";
+    public static final String TOKEN_EXPIRED = "expired";
+    public static final String TOKEN_VALID = "valid";
 
     @Override
     public User findUserByEmail(String email) {
@@ -38,11 +52,65 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveUser(User user) {
+    public User saveUser(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        user.setActive(true);
+        user.setEnabled(false);
         Role userRole = roleRepository.findByRole("CLIENT");
         user.setRole(userRole);
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User getUserByVerificationToken(final String verificationToken) {
+        final VerificationToken token = tokenRepository.findByToken(verificationToken);
+        if (token != null) {
+            return token.getUser();
+        }
+        return null;
+    }
+
+    @Override
+    public void createVerificationTokenForUser(User user, String token) {
+        final VerificationToken myToken = new VerificationToken(token, user);
+        tokenRepository.save(myToken);
+    }
+
+    @Override
+    public VerificationToken getVerificationToken(String VerificationToken) {
+        return tokenRepository.findByToken(VerificationToken);
+    }
+
+    @Override
+    public VerificationToken generateNewVerificationToken(final String existingVerificationToken) {
+        VerificationToken vToken = tokenRepository.findByToken(existingVerificationToken);
+        vToken.updateToken(UUID.randomUUID().toString());
+        vToken = tokenRepository.save(vToken);
+        return vToken;
+    }
+
+    @Override
+    public String validateVerificationToken(String token) {
+        final VerificationToken verificationToken = tokenRepository.findByToken(token);
+        if (verificationToken == null) {
+            return TOKEN_INVALID;
+        }
+
+        final User user = verificationToken.getUser();
+        final Calendar cal = Calendar.getInstance();
+        if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
+//            tokenRepository.delete(verificationToken);
+            return TOKEN_EXPIRED;
+        }
+
+        user.setEnabled(true);
+        tokenRepository.delete(verificationToken);
         userRepository.save(user);
+        return TOKEN_VALID;
+    }
+
+    @Override
+    public UserCompany saveCompany(UserCompany userCompany) {
+
+        return userCompanyRepository.save(userCompany);
     }
 }

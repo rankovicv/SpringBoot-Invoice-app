@@ -1,5 +1,6 @@
 package com.code.example.configuration;
 
+import com.code.example.security.CustomUserDetailsService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +29,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth)
             throws Exception {
-//        auth.
-//                jdbcAuthentication()
-//                .usersByUsernameQuery(usersQuery)
-//                .authoritiesByUsernameQuery(rolesQuery)
-//                .dataSource(dataSource)
-//                .passwordEncoder(bCryptPasswordEncoder);
-
         auth
                 .userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
     }
@@ -46,15 +40,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         http.
                 authorizeRequests()
-                .antMatchers("/").permitAll()
                 .antMatchers("/login").permitAll()
                 .antMatchers("/registration").permitAll()
                 .antMatchers("/admin/**").hasAuthority("ADMIN")
                 .antMatchers("/customers").hasAuthority("CLIENT")
                 .antMatchers("/index").authenticated()
+                .antMatchers("/").authenticated()
                 .antMatchers("/customer").authenticated()
                 .antMatchers("/products").authenticated()
-//                .antMatchers("/customer").permitAll()
+                .antMatchers("/customer/**").authenticated()
                 .and()
                 .formLogin()
                 .loginPage("/login")

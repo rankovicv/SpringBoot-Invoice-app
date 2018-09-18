@@ -27,13 +27,13 @@
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li  th:classappend="${#request.getRequestURI() == '/index' ? 'active' : ''}">
+                        <li  th:classappend="${#request.getRequestURI() == '/index' ? 'enabled' : ''}">
                             <a href="/index" th:href="@{/index}">Invoices</a>
                         </li>
-                        <li th:classappend="${#request.getRequestURI() == '/customers' ? 'active' : ''}">
+                        <li th:classappend="${#request.getRequestURI() == '/customers' ? 'enabled' : ''}">
                             <a href="/customers" th:href="@{/customers}">Customers</a>
                         </li>
-                        <li th:classappend="${#request.getRequestURI() == '/products' ? 'active' : ''}">
+                        <li th:classappend="${#request.getRequestURI() == '/products' ? 'enabled' : ''}">
                             <a href="/products">Products</a>
                         </li>
                         <li class="dropdown">

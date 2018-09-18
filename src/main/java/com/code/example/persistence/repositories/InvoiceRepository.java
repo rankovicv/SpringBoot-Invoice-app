@@ -11,4 +11,5 @@ public interface InvoiceRepository extends CrudRepository<Invoice, Long> {
 
     Iterable<Invoice> findInvoicesByCustomer(Customer customer);
 
+    Iterable<Invoice> findByUser_Id(Long userId);
 }

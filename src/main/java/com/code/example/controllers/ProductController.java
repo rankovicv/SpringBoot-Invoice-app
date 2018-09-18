@@ -1,6 +1,6 @@
 package com.code.example.controllers;
 
-import com.code.example.configuration.CurrentUser;
+import com.code.example.security.CurrentUser;
 import com.code.example.persistence.entities.Product;
 import com.code.example.persistence.entities.User;
 import com.code.example.services.ProductService;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
  * Created by veljko on 13.9.18.
  */
 @RestController
-@RequestMapping(path = "/product")
+@RequestMapping(path = "rest/product")
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ProductController {
@@ -24,7 +24,7 @@ public class ProductController {
     ProductService productService;
 
     @PostMapping()
-    public @ResponseBody Product addNewProduct(@ModelAttribute Product product) {
+    public Product addNewProduct(@RequestBody Product product) {
 
         CurrentUser myUserDetails = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = new User();
@@ -35,7 +35,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public @ResponseBody boolean deleteById(@PathVariable String id) {
+    public boolean deleteById(@PathVariable String id) {
 
         log.debug("Deleting product id: " + id);
 

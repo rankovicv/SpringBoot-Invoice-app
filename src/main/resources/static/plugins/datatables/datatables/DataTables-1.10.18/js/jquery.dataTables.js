@@ -5582,7 +5582,7 @@
 			var tr = $('<tr/>').appendTo( tmpTable.find('tbody') );
 	
 			// Clone the table header and footer - we can't use the header / footer
-			// from the cloned table, since if scrolling is active, the table's
+			// from the cloned table, since if scrolling is enabled, the table's
 			// real header and footer are contained in different table tags
 			tmpTable.find('thead, tfoot').remove();
 			tmpTable
@@ -9483,7 +9483,7 @@
 	/**
 	 * Object models container, for the various models that DataTables has
 	 * available to it. These models define the objects that are used to hold
-	 * the active state and configuration of the table.
+	 * the enabled state and configuration of the table.
 	 *  @namespace
 	 */
 	DataTable.models = {};

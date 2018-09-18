@@ -1,6 +1,6 @@
 package com.code.example.controllers;
 
-import com.code.example.configuration.CurrentUser;
+import com.code.example.security.CurrentUser;
 import com.code.example.persistence.entities.Product;
 import com.code.example.persistence.entities.User;
 import com.code.example.services.ProductService;
@@ -84,7 +84,7 @@ public class ProductControllerTest {
 
         when(productService.saveProduct(any())).thenReturn(product);
 
-        RequestBuilder requestBuilder = post("/product")
+        RequestBuilder requestBuilder = post("/rest/product")
                 .with(user(userDetails))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)

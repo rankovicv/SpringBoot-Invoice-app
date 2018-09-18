@@ -12,12 +12,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Created by veljko on 27.8.18.
  */
 @Slf4j
-@Controller
+@RestController
+@RequestMapping(path = "rest/invoice")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class InvoiceController {
 
@@ -27,15 +29,6 @@ public class InvoiceController {
     private final @NonNull
     SaleService saleService;
 
-    @GetMapping("/invoice/show/{id}")
-    public String showById(@PathVariable String id, Model model) {
 
-        Invoice invoice = invoiceService.findById(new Long(id));
-
-        model.addAttribute("invoice", invoice);
-        model.addAttribute("sales", saleService.getSalesByInvoice(invoice));
-
-        return "invoice/show";
-    }
 
 }

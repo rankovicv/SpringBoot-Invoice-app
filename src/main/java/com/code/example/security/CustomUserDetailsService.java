@@ -1,4 +1,4 @@
-package com.code.example.configuration;
+package com.code.example.security;
 
 import com.code.example.persistence.entities.Role;
 import com.code.example.persistence.repositories.UserRepository;
@@ -33,7 +33,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         authorities.add(new SimpleGrantedAuthority(role.getRole()));
 
         return new CurrentUser
-                (user.getUsername(), user.getPassword(), user.isActive(), true,true, true, authorities, user.getId());
+                (user.getUsername(), user.getPassword(), user.isEnabled(), true,true, true, authorities, user.getId());
 
     }
 
