@@ -57,8 +57,8 @@ public class LoginController {
 
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
     public String showRegistrationForm(Model model) {
-        User userDto = new User();
-        model.addAttribute("user", userDto);
+        User user = new User();
+        model.addAttribute("user", user);
         return "registration";
     }
 

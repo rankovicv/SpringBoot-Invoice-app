@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User settings</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"
+          th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link th:href="@{/plugins/datatables/datatables.css}" rel="stylesheet">
+    <script src="/webjars/jquery/3.3.1/jquery.min.js"></script>
+    <script th:src="@{/plugins/datatables/datatables.js}"></script>
+    <script th:src="@{/plugins/parsley/parsley.min.js}"></script>
+    <script th:src="@{/plugins/bcrypt/bCrypt.js}"></script>
+    <script th:src="@{/plugins/bcrypt/isaac.js}"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+</head>
+<body>
+<div th:replace="navigation/nav :: nav"></div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <div class="panel-title-two">
+                        <div class="panel-title-two">
+                            <h1 class="panel-title">User Info</h1>
+                        </div>
+                        <div class="panel-btn">
+                            <a href="#" class="btn btn-info" id="changePasswordOpen">
+                                Change password
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <form autocomplete="off" action="#" class="form-horizontal"
+                          role="form" data-parsley-validate="" id="userChangeForm">
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <label> Name </label>
+                                <input type="text" id="inputName" th:field="${user.name}" placeholder="Name"
+                                       class="form-control" required data-parsley-errors-container="inputNameError" data-parsley-trigger="blur"/>
+                                <span class="parsley-errors" id="inputNameError"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <label> Lastname </label>
+                                <input type="text" id="inputLastname" th:field="${user.lastName}" placeholder="Lastname"
+                                       class="form-control" required data-parsley-errors-container="inputLastnameError" data-parsley-trigger="blur"/>
+                                <span class="parsley-errors" id="inputLastnameError"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-3">
+                                <button type="button" class="btn btn-primary btn-block" id="updateUser">Update</button>
+                            </div>
+                        </div>
+
+                        <h2><span class="text-success" id="successMessage"></span></h2>
+                    </form>
+                </div>
+        </div>
+            <span id="successPasswordMsg" class="text-info"></span>
+    </div>
+</div>
+</div>
+</body>
+<div id="passwordModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add Product</h4>
+            </div>
+            <form id="changePassword-form" data-parsley-validate="" role="form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="oldPassword">Old Password:</label>
+                        <input type="password" class="form-control" id="oldPassword" placeholder="Enter current password"
+                               data-parsley-errors-container="oldPasswordError">
+                        <span class="parsley-errors" id="oldPasswordError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputNewPassword">New Password:</label>
+                        <input type="password" class="form-control" id="inputNewPassword" placeholder="Enter new password"
+                               data-parsley-pattern="^(?=.*[0-9])(?=.*[a-zA-Z])[\s\S\d]{8,}$" data-parsley-errors-container="inputNewPasswordError"
+                               data-parsley-trigger="blur" >
+                        <span class="parsley-errors" id="inputNewPasswordError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputConfirmPassword">Confirm New Password:</label>
+                        <input type="password" class="form-control" id="inputConfirmPassword" placeholder="Confirm New Password"
+                               data-parsley-errors-container="confirmPasswordError" data-parsley-equalto="#inputNewPassword"
+                               data-parsley-trigger="blur" >
+                        <span class="parsley-errors" id="confirmPasswordError"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" disabled="disabled" data-dismiss="modal" id="savePasswordChange">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    const $inputName = $("#inputName");
+    const $inputLastname = $("#inputLastname");
+    const $successMessage = $("#successMessage");
+
+    //Model
+
+    const $oldPassword = $("#oldPassword");
+    const $inputNewPassword = $("#inputNewPassword");
+    const $successPasswordMsg = $("#successPasswordMsg");
+    const $changePasswordForm = $("#changePassword-form");
+
+    $('#changePasswordOpen').click( function (e) {
+        $("#passwordModal").modal();
+        $changePasswordForm.trigger(reset);
+        $successPasswordMsg.html("");
+    });
+
+    function validateForm(idForm) {
+        idForm.parsley().validate();
+        return idForm.parsley().isValid();
+    }
+
+    $("#updateUser").click(function updateUserInfo() {
+        if (validateForm($('#userChangeForm'))) {
+
+            let userJson = {
+                name :  $inputName.val(),
+                lastName : $inputLastname.val()
+            };
+
+            sendAjaxRequest("POST", "edit", userJson, function(res) {
+                $successMessage.html("Successfully saved")
+
+            }, function(res) {
+                console.error('Error while saving product');
+                console.error(res);
+            });
+        }
+    });
+
+    var checkPass = false;
+
+    function chekingPass(oldPass) {
+        sendAjaxRequest("GET", "checkPassword?oldPass=" + oldPass, "", function(res) {
+            console.log(res);
+            checkPass = res;
+            if(checkPass === true) {
+                $('#oldPasswordError').text('');
+                $('#savePasswordChange').removeAttr('disabled');
+            } else {
+                $('#oldPasswordError').text('Incorrect password.');
+            }
+        }, function(res) {
+            console.error('Error');
+            console.error(res);
+        });
+    }
+
+    $inputNewPassword.focusin(function() {
+        let oldPass = $oldPassword.val();
+        chekingPass(oldPass);
+    });
+
+    $('#savePasswordChange').click(function () {
+        if (validateForm($changePasswordForm) && checkPass) {
+
+            $.ajax({
+                type: "POST",
+                url: "changePassword",
+                data: $inputNewPassword.val(),
+                contentType : "text/plain",
+                success: function(res) {
+                    $successPasswordMsg.html("New password saved!");
+                    $("#passwordModal").modal('toggle');
+                },
+                error: function(res) {
+                    console.error('Error');
+                    $successPasswordMsg.html("Error!");
+                    console.error(res);
+                }
+        });
+    }
+    });
+
+    function sendAjaxRequest(type, url, data, onSuccess, onError) {
+        $.ajax({
+            type: type,
+            url: url,
+            data: JSON.stringify(data),
+            contentType : 'application/json; charset=utf-8',
+            success: function(res) {
+                onSuccess(res);
+            },
+            error: function(res) {
+                onError(res);
+            }
+        });
+    }
+
+    /*]]>*/
+</script>
+</html>

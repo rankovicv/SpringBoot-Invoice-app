@@ -1,5 +1,7 @@
 package com.code.example.services.impl;
 
+import com.code.example.commands.UserCommand;
+import com.code.example.converters.UserToCommandUser;
 import com.code.example.exceptions.NotFoundException;
 import com.code.example.persistence.entities.Role;
 import com.code.example.persistence.entities.User;
@@ -18,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -40,6 +43,9 @@ public class UserServiceImpl implements UserService {
     private final @NonNull
     VerificationTokenRepository tokenRepository;
 
+    private final @NonNull
+    UserToCommandUser userToCommandUser;
+
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -53,12 +59,81 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserCommand findUserById(Long userId) {
+
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if(!userOptional.isPresent()) {
+            throw new NotFoundException("User not found");
+        }
+
+        User user = userOptional.get();
+
+        return userToCommandUser.convert(user);
+    }
+
+    @Override
     public User saveUser(User user) {
+
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         user.setEnabled(false);
         Role userRole = roleRepository.findByRole("CLIENT");
         user.setRole(userRole);
+
         return userRepository.save(user);
+    }
+
+    @Override
+    public User getUser(Long userId) {
+
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if (!userOptional.isPresent()) {
+            throw new NotFoundException("User not found!");
+        }
+
+        return userOptional.get();
+    }
+
+    @Override
+    public boolean checkPassword(long userId, String password) {
+
+        User user = getUser(userId);
+
+        if (bCryptPasswordEncoder.matches(password, user.getPassword())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean changeUserPassword(String password, long userId) {
+
+        User user = getUser(userId);
+
+        user.setPassword(bCryptPasswordEncoder.encode(password));
+
+        userRepository.save(user);
+
+        return true;
+    }
+
+    @Override
+    public void saveUserCommand(UserCommand userCommand) {
+
+        Optional<User> userOptional = userRepository.findById(userCommand.getId());
+
+        if(!userOptional.isPresent()) {
+            throw new NotFoundException("User not found");
+        }
+
+        User user = userOptional.get();
+        user.setName(userCommand.getName());
+        user.setLastName(userCommand.getLastName());
+
+        userRepository.save(user);
+
     }
 
     @Override

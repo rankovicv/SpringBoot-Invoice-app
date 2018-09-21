@@ -32,6 +32,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         Set<GrantedAuthority> authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority(role.getRole()));
 
+
         return new CurrentUser
                 (user.getUsername(),
                         user.getPassword(),
@@ -40,7 +41,9 @@ public class CustomUserDetailsService implements UserDetailsService {
                         true,
                         true,
                         authorities,
-                        user.getId());
+                        user.getId(),
+                        user.getName(),
+                        user.getLastName());
 
     }
 

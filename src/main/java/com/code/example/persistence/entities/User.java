@@ -6,6 +6,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 import java.util.Set;
 
 /**
@@ -24,7 +25,8 @@ public class User {
     @NotEmpty(message = "*Please provide an email")
     private String username;
 
-    @Length(min = 5, message = "*Your password must have at least 5 characters")
+//    @Length(min = 5, message = "*Your password must have at least 5 characters")
+    @Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-Z])[\\s\\S\\d]{8,}", message = "Must be a little complicated")
     @NotEmpty(message = "*Please provide your password")
     private String password;
 
@@ -35,10 +37,6 @@ public class User {
     private String lastName;
 
     private boolean enabled;
-
-    @OneToOne
-    @JoinColumn(name = "company_id")
-    private UserCompany company;
 
     @ManyToOne
     private Role role;

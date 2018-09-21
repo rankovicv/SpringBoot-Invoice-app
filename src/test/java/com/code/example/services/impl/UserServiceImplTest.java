@@ -1,5 +1,6 @@
 package com.code.example.services.impl;
 
+import com.code.example.converters.UserToCommandUser;
 import com.code.example.persistence.entities.User;
 import com.code.example.persistence.repositories.RoleRepository;
 import com.code.example.persistence.repositories.UserCompanyRepository;
@@ -33,11 +34,14 @@ public class UserServiceImplTest {
     @Mock
     VerificationTokenRepository tokenRepository;
 
+    @Mock
+    UserToCommandUser userToCommandUser;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        userService = new UserServiceImpl(userRepository, roleRepository, userCompanyRepository, tokenRepository);
+        userService = new UserServiceImpl(userRepository, roleRepository, userCompanyRepository, tokenRepository, userToCommandUser);
     }
 
     @Test

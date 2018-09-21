@@ -23,6 +23,9 @@ table tbody tr {
 table tbody tr td:first-child::before {
     content: counter(rowNumber) ". ";
 }
+.enabled a{
+    color: #337ab7 !important;
+}
 
 
 /*Customers part*/

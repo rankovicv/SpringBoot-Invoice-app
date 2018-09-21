@@ -14,7 +14,13 @@
             crossorigin="anonymous" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
 </head>
 <body>
-<h1 th:text="${message}">Something went wrong!</h1>
-<a href="/">Go Home</a>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <h1 th:text="${message}">Something went wrong!</h1>
+            <a href="/">Go Home</a>
+        </div>
+    </div>
+</div>
 </body>
 </html>

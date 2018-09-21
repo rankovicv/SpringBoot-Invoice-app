@@ -56,7 +56,8 @@ public class ProductControllerTest {
      List<SimpleGrantedAuthority> role_client = Collections.singletonList(
              new SimpleGrantedAuthority("ROLE_CLIENT")
      );
-    private CurrentUser userDetails = new CurrentUser("veljko","veljko", true,true,true,true, role_client, 1L);
+    private CurrentUser userDetails = new CurrentUser("veljko","veljko", true,true,true,true,
+            role_client, 1L, "user", "user");
 
     @Before
     public void setUp() {
