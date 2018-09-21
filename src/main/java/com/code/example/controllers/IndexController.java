@@ -1,10 +1,8 @@
 package com.code.example.controllers;
 
+import com.code.example.persistence.entities.*;
 import com.code.example.security.CurrentUser;
 import com.code.example.mail.EmailService;
-import com.code.example.persistence.entities.Customer;
-import com.code.example.persistence.entities.Invoice;
-import com.code.example.persistence.entities.Product;
 import com.code.example.services.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -49,9 +47,14 @@ public class IndexController {
 
         log.debug("Getting Index page");
 
+        CurrentUser myUserDetails = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserCompany userCompany = userService.getUserCompany(myUserDetails.getUserId());
+
+        if(userCompany == null) {
+            return "redirect:user/company/edit";
+        }
         Set<Invoice> invoices = invoiceService.getInvoices();
 
-        CurrentUser myUserDetails = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         model.addAttribute("invoices", invoices);
         model.addAttribute("loggedUser", myUserDetails.getUsername());

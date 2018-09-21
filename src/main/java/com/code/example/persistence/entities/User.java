@@ -36,6 +36,10 @@ public class User {
 
     private boolean enabled;
 
+    @OneToOne
+    @JoinColumn(name = "company_id")
+    private UserCompany company;
+
     @ManyToOne
     private Role role;
 

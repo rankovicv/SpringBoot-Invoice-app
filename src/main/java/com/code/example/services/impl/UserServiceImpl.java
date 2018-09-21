@@ -1,5 +1,6 @@
 package com.code.example.services.impl;
 
+import com.code.example.exceptions.NotFoundException;
 import com.code.example.persistence.entities.Role;
 import com.code.example.persistence.entities.User;
 import com.code.example.persistence.entities.UserCompany;
@@ -98,7 +99,6 @@ public class UserServiceImpl implements UserService {
         final User user = verificationToken.getUser();
         final Calendar cal = Calendar.getInstance();
         if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-//            tokenRepository.delete(verificationToken);
             return TOKEN_EXPIRED;
         }
 
@@ -112,5 +112,11 @@ public class UserServiceImpl implements UserService {
     public UserCompany saveCompany(UserCompany userCompany) {
 
         return userCompanyRepository.save(userCompany);
+    }
+
+    @Override
+    public UserCompany getUserCompany(Long companyId) {
+
+        return userCompanyRepository.findByUser_Id(companyId);
     }
 }

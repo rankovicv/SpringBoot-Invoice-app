@@ -1,15 +1,10 @@
 package com.code.example.persistence.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 /**
  * Created by veljko on 17.9.18.
@@ -17,6 +12,8 @@ import javax.validation.constraints.Size;
 @Entity
 @Data
 public class UserCompany extends Company{
+
+    private String bankAccount;
 
     @OneToOne
     @JoinColumn(name = "user_id")

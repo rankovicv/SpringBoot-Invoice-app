@@ -25,4 +25,6 @@ public interface UserService {
 
     UserCompany saveCompany(UserCompany userCompany);
 
+    UserCompany getUserCompany(Long userId);
+
 }

@@ -6,10 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 /**
  * Created by veljko on 18.9.18.
@@ -23,7 +20,7 @@ public abstract class Company {
     private Long id;
 
     @NotNull
-    @Size(min=2, max=40)
+    @Size(min=2, max=40, message = "*Length of name must be between 2 and 40 characters")
     private String name;
 
     @Email(message = "*Please provide a valid Email")
@@ -34,8 +31,8 @@ public abstract class Company {
 
     private String address;
 
-    @NotNull(message="Please enter an PIB")
-    private Integer pib;
+    @Pattern(regexp="[\\d]{10}", message = "*PIB must be 10 dig")
+    private String pib;
 
     private Integer idNumber;
 }

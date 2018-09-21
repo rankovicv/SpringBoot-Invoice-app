@@ -1,7 +1,6 @@
 package com.code.example.controllers;
 
 import com.code.example.exceptions.ApiError;
-import com.code.example.exceptions.NotFoundException;
 import com.code.example.util.GenericResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +8,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailException;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.transaction.TransactionSystemException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -20,17 +16,13 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
@@ -50,13 +42,13 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     // API
 
 //     400
-//    @Override
-//    protected ResponseEntity<Object> handleBindException(final BindException ex, final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
-//        log.error("400 Status Code", ex);
-//        final BindingResult result = ex.getBindingResult();
-//        final GenericResponse bodyOfResponse = new GenericResponse(result.getAllErrors(), "Invalid" + result.getObjectName());
-//        return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
-//    }
+    @Override
+    protected ResponseEntity<Object> handleBindException(final BindException ex, final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
+        log.error("400 Status Code", ex);
+        final BindingResult result = ex.getBindingResult();
+        final GenericResponse bodyOfResponse = new GenericResponse(result.getAllErrors(), "Invalid" + result.getObjectName());
+        return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
 //
 //    @ExceptionHandler({NotFoundException.class})
 //    public ResponseEntity<Object> handleNotFound(final NotFoundException ex, final WebRequest request) {
@@ -181,8 +173,8 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
             WebRequest request) {
         StringBuilder builder = new StringBuilder();
         builder.append(ex.getMethod());
-//        builder.append(
-//                " method is not supported for this request. Supported methods are ");
+        builder.append(
+                " method is not supported for this request. Supported methods are ");
         Objects.requireNonNull(ex.getSupportedHttpMethods()).forEach(t -> builder.append(t + " "));
 
         ApiError apiError = new ApiError(HttpStatus.METHOD_NOT_ALLOWED,

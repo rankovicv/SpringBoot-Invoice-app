@@ -33,7 +33,14 @@ public class CustomUserDetailsService implements UserDetailsService {
         authorities.add(new SimpleGrantedAuthority(role.getRole()));
 
         return new CurrentUser
-                (user.getUsername(), user.getPassword(), user.isEnabled(), true,true, true, authorities, user.getId());
+                (user.getUsername(),
+                        user.getPassword(),
+                        user.isEnabled(),
+                        true,
+                        true,
+                        true,
+                        authorities,
+                        user.getId());
 
     }
 

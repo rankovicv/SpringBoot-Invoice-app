@@ -56,15 +56,14 @@ public class LoginController {
     }
 
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
-    public String showRegistrationForm(WebRequest request, Model model) {
+    public String showRegistrationForm(Model model) {
         User userDto = new User();
         model.addAttribute("user", userDto);
         return "registration";
     }
 
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
-    public ModelAndView createNewUser(@Valid User user, BindingResult bindingResult, WebRequest request) {
-        ModelAndView modelAndView = new ModelAndView();
+    public String createNewUser(@Valid User user, BindingResult bindingResult, WebRequest request, Model model) {
         User userExists = userService.findUserByEmail(user.getUsername());
         if (userExists != null) {
             bindingResult
@@ -72,7 +71,7 @@ public class LoginController {
                             "There is already a user registered with the email provided");
         }
         if (bindingResult.hasErrors()) {
-            modelAndView.setViewName("registration");
+            return "registration";
         } else {
             User registered = userService.saveUser(user);
 
@@ -80,16 +79,15 @@ public class LoginController {
             eventPublisher.publishEvent(new OnRegistrationCompleteEvent
                     (registered, request.getLocale(), appUrl));
 
-            modelAndView.addObject("successMessage", "User has been registered successfully, we sent you an confirmation email");
-            modelAndView.addObject("user", new User());
-            modelAndView.setViewName("registration");
+            model.addAttribute("successMessage", "User has been registered successfully, we sent you an activation email");
+            model.addAttribute("user", new User());
         }
 
-        return modelAndView;
+        return "registration";
     }
 
     @RequestMapping(value = "/registrationConfirm", method = RequestMethod.GET)
-    public String confirmRegistration(final HttpServletRequest request, final Model model, @RequestParam("token") final String token) throws UnsupportedEncodingException {
+    public String confirmRegistration(final HttpServletRequest request, final Model model, @RequestParam("token") final String token) {
         Locale locale = request.getLocale();
         final String result = userService.validateVerificationToken(token);
         if (result.equals("valid")) {
