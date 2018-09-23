@@ -21,6 +21,8 @@ public class Sale {
 
     private Double price;
 
+    private int unitOfMeasure;
+
     @ManyToOne
     private Product product;
 

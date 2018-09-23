@@ -20,16 +20,41 @@
 <body>
 <div th:replace="navigation/nav :: nav"></div>
 <div class="container theme-showcase">
-    <div class="page-header" th:text="${invoice.invoiceNumber}">Invoice number</div>
+    <div class="page-header">
+        <h2  th:text="${'Invoice number: ' + invoice.invoiceNumber}"></h2>
+    </div>
     <div class="container-fluid" style="margin-top: 20px">
         <div class="row">
             <div class="col-sm-4">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title"> Created: </h3>
+                        <h3 class="panel-title"> Your Company: </h3>
                     </div>
-                    <div class="panel-body" th:text="${#dates.format(invoice.time, 'dd-MM-yyyy')}">
-                        Some text
+                    <div class="panel-body">
+                        <div class="row">
+                            <label class="col-sm-4 col-form-label">Name : </label>
+                            <div class="col-sm-8" th:text="${userCompany.name}"></div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-4 col-form-label">Email : </label>
+                            <div class="col-sm-8" th:text="${userCompany.email}"></div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-4 col-form-label">Phone : </label>
+                            <div class="col-sm-8" th:text="${userCompany.phone}"></div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-4 col-form-label">Adress : </label>
+                            <div class="col-sm-8" th:text="${userCompany.address}"></div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-4 col-form-label">PIB : </label>
+                            <div class="col-sm-8" th:text="${userCompany.pib}"></div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-4 col-form-label">Bank ac : </label>
+                            <div class="col-sm-8" th:text="${userCompany.bankAccount}"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -44,14 +69,39 @@
                         </div>
                     </div>
                     <div class="panel-body">
-                        <p th:text="${invoice.customer.name}"></p>
-                        <p th:text="${invoice.customer.email}"></p>
-                        <p th:text="${invoice.customer.phone}"></p>
-                        <p th:text="${invoice.customer.address}"></p>
+                        <div class="row">
+                            <label class="col-sm-4 col-form-label">Name : </label>
+                            <div class="col-sm-8" th:text="${invoice.customer.name}"></div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-4 col-form-label">Email : </label>
+                            <div class="col-sm-8" th:text="${invoice.customer.email}"></div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-4 col-form-label">Phone : </label>
+                            <div class="col-sm-8" th:text="${invoice.customer.phone}"></div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-4 col-form-label">Adress : </label>
+                            <div class="col-sm-8" th:text="${invoice.customer.address}"></div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-4 col-form-label">PIB : </label>
+                            <div class="col-sm-8" th:text="${invoice.customer.pib}"></div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-4"></div>
+            <div class="col-sm-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"> Created: </h3>
+                    </div>
+                    <div class="panel-body" th:text="${#dates.format(invoice.time, 'dd-MM-yyyy')}">
+                        Some text
+                    </div>
+                </div>
+            </div>
         </div>
         <h2 class="sub-header">Invoice sale</h2>
         <div class="table-responsive">
@@ -83,22 +133,6 @@
                 </tr>
                 </tbody>
             </table>
-            <form>
-                <div class="form-group">
-                    <label for="exampleInputEmail1">Email address</label>
-                    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
-                    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputPassword1">Password</label>
-                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-                </div>
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
             <button class="btn btn-primary" id="addNewSale">Add</button>
         </div>
     </div>
@@ -106,7 +140,7 @@
 </body>
 <script>
 
-    var table = $('myTable').DataTable();
+    // var table = $('myTable').DataTable();
 
     $(".editSale").click(function editSale() {
 

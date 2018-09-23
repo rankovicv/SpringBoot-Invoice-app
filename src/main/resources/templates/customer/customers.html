@@ -259,7 +259,11 @@
         $("#tablePanel").html(tbl);
         $(document).find('.btn_save').hide();
         $(document).find('.btn_cancel').hide();
-        $("#tableCustomer").DataTable().column( '1:visible' )
+        $("#tableCustomer").DataTable({
+            "columnDefs": [
+                { "searchable": false, "targets": -1 }
+            ]
+        }).column( '1:visible' )
             .order( 'asc' )
             .draw();
 

@@ -47,17 +47,18 @@ public class IndexController {
 
         log.debug("Getting Index page");
 
-        CurrentUser myUserDetails = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserCompany userCompany = userService.getUserCompany(myUserDetails.getUserId());
+        CurrentUser authUser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserCompany userCompany = userService.getUserCompany(authUser.getUserId());
 
         if(userCompany == null) {
             return "redirect:user/company/edit";
         }
+
         Set<Invoice> invoices = invoiceService.getInvoices();
 
-
         model.addAttribute("invoices", invoices);
-        model.addAttribute("loggedUser", myUserDetails.getUsername());
+        model.addAttribute("loggedUserName", authUser.getName());
+        model.addAttribute("loggedUserLastName", authUser.getLastName());
 
         return "index";
     }
@@ -79,8 +80,8 @@ public class IndexController {
     public String getProductsPage(Model model) {
         log.debug("Products page open");
 
-        CurrentUser myUserDetails = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Set<Product> productSet = productService.getProductsByUser(myUserDetails.getUserId());
+        CurrentUser authUser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Set<Product> productSet = productService.getProductsByUser(authUser.getUserId());
 
         model.addAttribute("products", productSet);
 
@@ -91,9 +92,13 @@ public class IndexController {
     @GetMapping("/invoice/show/{id}")
     public String showById(@PathVariable String id, Model model) {
 
+        CurrentUser authUser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        UserCompany userCompany = userService.getUserCompany(authUser.getUserId());
         Invoice invoice = invoiceService.findById(new Long(id));
 
         model.addAttribute("invoice", invoice);
+        model.addAttribute("userCompany", userCompany);
         model.addAttribute("sales", saleService.getSalesByInvoice(invoice));
 
         return "invoice/show";

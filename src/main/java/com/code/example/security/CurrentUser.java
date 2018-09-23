@@ -18,7 +18,6 @@ import java.util.Collection;
 public class CurrentUser extends User {
 
     private long userId;
-    private long companyId;
     private String name;
     private String lastName;
 
