@@ -18,7 +18,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.jws.WebParam;
 import javax.validation.Valid;
 
 /**
@@ -121,6 +120,24 @@ public class UserController {
         CurrentUser myUserDetails = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
        userService.changeUserPassword(pass, myUserDetails.getUserId());
+
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
+    @ResponseBody
+    @PostMapping(value = "changeRole/{id}")
+    public ResponseEntity<String> changeUserRole(@PathVariable String id,@RequestParam(value = "role") String role) {
+
+        userService.changeUserRole(Long.parseLong(id), Long.parseLong(role));
+
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
+    @ResponseBody
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable String id) {
+
+        userService.deleteUser(Long.parseLong(id));
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }

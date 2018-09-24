@@ -5,6 +5,8 @@ import com.code.example.persistence.entities.User;
 import com.code.example.persistence.entities.UserCompany;
 import com.code.example.persistence.entities.VerificationToken;
 
+import java.util.Set;
+
 /**
  * Created by veljko on 9.9.18.
  */
@@ -17,6 +19,12 @@ public interface UserService {
     User saveUser(User user);
 
     User getUser(Long userId);
+
+    void changeUserRole(Long userId, Long roleId);
+
+    void deleteUser(Long userId);
+
+    Set<User> getAllUsers();
 
     boolean checkPassword(long userId, String password);
 

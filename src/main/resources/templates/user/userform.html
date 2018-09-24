@@ -21,6 +21,8 @@
 <div class="container">
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
+            <div class="alert alert-info" id="successMessage" hidden="hidden">
+            </div>
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     <div class="panel-title-two">
@@ -59,8 +61,6 @@
                                 <button type="button" class="btn btn-primary btn-block" id="updateUser">Update</button>
                             </div>
                         </div>
-
-                        <h2><span class="text-success" id="successMessage"></span></h2>
                     </form>
                 </div>
         </div>
@@ -89,24 +89,23 @@
                         <label for="inputNewPassword">New Password:</label>
                         <input type="password" class="form-control" id="inputNewPassword" placeholder="Enter new password"
                                data-parsley-pattern="^(?=.*[0-9])(?=.*[a-zA-Z])[\s\S\d]{8,}$" data-parsley-errors-container="inputNewPasswordError"
-                               data-parsley-trigger="blur" >
+                               data-parsley-trigger="blur" data-parsley-required />
                         <span class="parsley-errors" id="inputNewPasswordError"></span>
                     </div>
                     <div class="form-group">
                         <label for="inputConfirmPassword">Confirm New Password:</label>
                         <input type="password" class="form-control" id="inputConfirmPassword" placeholder="Confirm New Password"
                                data-parsley-errors-container="confirmPasswordError" data-parsley-equalto="#inputNewPassword"
-                               data-parsley-trigger="blur" >
+                               data-parsley-trigger="blur" data-parsley-required >
                         <span class="parsley-errors" id="confirmPasswordError"></span>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" disabled="disabled" data-dismiss="modal" id="savePasswordChange">Save</button>
+                    <button type="button" class="btn btn-primary" disabled="disabled" id="savePasswordChange">Save</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </form>
         </div>
-
     </div>
 </div>
 <script th:inline="javascript">
@@ -125,7 +124,7 @@
 
     $('#changePasswordOpen').click( function (e) {
         $("#passwordModal").modal();
-        $changePasswordForm.trigger(reset);
+        $changePasswordForm.trigger('reset');
         $successPasswordMsg.html("");
     });
 
@@ -143,7 +142,8 @@
             };
 
             sendAjaxRequest("POST", "edit", userJson, function(res) {
-                $successMessage.html("Successfully saved")
+                $successMessage.html("Successfully saved");
+                $successMessage.show().delay(5000).fadeOut();
 
             }, function(res) {
                 console.error('Error while saving product');
@@ -159,10 +159,11 @@
             console.log(res);
             checkPass = res;
             if(checkPass === true) {
-                $('#oldPasswordError').text('');
-                $('#savePasswordChange').removeAttr('disabled');
+                $successMessage.html("Successfully saved");
+                $successMessage.show().delay(5000).fadeOut();
             } else {
-                $('#oldPasswordError').text('Incorrect password.');
+                $successMessage.html("Error");
+                $successMessage.show().delay(5000).fadeOut();
             }
         }, function(res) {
             console.error('Error');
@@ -177,7 +178,6 @@
 
     $('#savePasswordChange').click(function () {
         if (validateForm($changePasswordForm) && checkPass) {
-
             $.ajax({
                 type: "POST",
                 url: "changePassword",

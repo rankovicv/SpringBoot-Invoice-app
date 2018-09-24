@@ -1,5 +1,6 @@
 package com.code.example.persistence.entities;
 
+import com.code.example.util.UnitEnum;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -21,7 +22,7 @@ public class Sale {
 
     private Double price;
 
-    private int unitOfMeasure;
+    private UnitEnum unitOfMeasure;
 
     @ManyToOne
     private Product product;

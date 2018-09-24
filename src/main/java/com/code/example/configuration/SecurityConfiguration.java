@@ -33,8 +33,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
     }
 
-
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
@@ -43,7 +41,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login").permitAll()
                 .antMatchers("/registration").permitAll()
                 .antMatchers("/admin/**").hasAuthority("ADMIN")
-                .antMatchers("/customers").hasAuthority("CLIENT")
+                .antMatchers("/customers").authenticated()
                 .antMatchers("/index").authenticated()
                 .antMatchers("/").authenticated()
                 .antMatchers("/customer").authenticated()

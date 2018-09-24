@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -29,9 +30,6 @@ public class IndexController {
 
     private final @NonNull
     CustomerService customerService;
-
-    private final @NonNull
-    EmailService emailService;
 
     private final @NonNull
     UserService userService;
@@ -54,7 +52,7 @@ public class IndexController {
             return "redirect:user/company/edit";
         }
 
-        Set<Invoice> invoices = invoiceService.getInvoices();
+        Set<Invoice> invoices = invoiceService.getUserInvoices(authUser.getUserId());
 
         model.addAttribute("invoices", invoices);
         model.addAttribute("loggedUserName", authUser.getName());

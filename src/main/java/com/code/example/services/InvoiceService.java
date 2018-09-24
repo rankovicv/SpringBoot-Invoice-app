@@ -11,6 +11,8 @@ public interface InvoiceService {
 
     Set<Invoice> getInvoices();
 
+    Set<Invoice> getUserInvoices(Long userId);
+
     Invoice findById(Long id);
 
     Invoice saveInvoice(Invoice invoice);

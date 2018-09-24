@@ -39,9 +39,6 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     @Autowired
     private MessageSource messages;
 
-    // API
-
-//     400
     @Override
     protected ResponseEntity<Object> handleBindException(final BindException ex, final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
         log.error("400 Status Code", ex);
@@ -49,53 +46,6 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         final GenericResponse bodyOfResponse = new GenericResponse(result.getAllErrors(), "Invalid" + result.getObjectName());
         return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
-//
-//    @ExceptionHandler({NotFoundException.class})
-//    public ResponseEntity<Object> handleNotFound(final NotFoundException ex, final WebRequest request) {
-//        log.error("404 Status Code", ex);
-//        final GenericResponse bodyOfResponse = new GenericResponse(messages.getMessage("message.notFound", null, request.getLocale()), "Not found");
-//        handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
-//        return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
-//    }
-//
-//    @ExceptionHandler({ ConstraintViolationException.class })
-//    public ResponseEntity<Object> handleViolation(final ConstraintViolationException ex, final WebRequest request) {
-//        log.error("400 Status Code", ex);
-//        final GenericResponse bodyOfResponse = new GenericResponse(messages.getMessage("message.notFound", null, request.getLocale()), "InternalError");
-//        return new ResponseEntity<>(bodyOfResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST);
-//    }
-//
-//    @ExceptionHandler({ Exception.class })
-//    public ResponseEntity<Object> handleInternal(final RuntimeException ex, final WebRequest request) {
-//        log.error("500 Status Code", ex);
-//        final GenericResponse bodyOfResponse = new GenericResponse(messages.getMessage("message.error", null, request.getLocale()), "InternalError");
-//        return new ResponseEntity<>(bodyOfResponse, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
-//
-//    @ExceptionHandler({ AccessDeniedException.class })
-//    public ResponseEntity<Object> handleAccessDeniedException(
-//            Exception ex, WebRequest request) {
-//        log.error("403 Status Code", ex);
-//        final GenericResponse bodyOfResponse = new GenericResponse(messages.getMessage("message.unauth", null, request.getLocale()), "Access denied");
-//        return new ResponseEntity<>(
-//                "Access denied", new HttpHeaders(), HttpStatus.FORBIDDEN);
-//    }
-//
-//    @Override
-//    protected ResponseEntity<Object> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex, final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
-//        logger.error("400 Status Code", ex);
-//        final BindingResult result = ex.getBindingResult();
-//        final GenericResponse bodyOfResponse = new GenericResponse(result.getAllErrors(), "Invalid" + result.getObjectName());
-//        return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
-//    }
-//
-//    // 500
-//    @ExceptionHandler({ MailException.class })
-//    public ResponseEntity<Object> handleMail(final RuntimeException ex, final WebRequest request) {
-//        logger.error("500 Status Code", ex);
-//        final GenericResponse bodyOfResponse = new GenericResponse(messages.getMessage("message.email.config.error", null, request.getLocale()), "MailError");
-//        return new ResponseEntity<>(bodyOfResponse, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin page</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"
+          th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link th:href="@{/plugins/datatables/datatables.css}" rel="stylesheet">
+    <script src="/webjars/jquery/3.3.1/jquery.min.js"></script>
+    <script th:src="@{/plugins/datatables/datatables.js}"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+</head>
+<body>
+<div th:replace="navigation/nav :: nav"></div>
+<div class="container theme-showcase">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-info" id="successMessage" hidden="hidden">
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    All Users
+                </div>
+                <div class="panel-body" id="tablePanel">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Manage Role</h4>
+            </div>
+            <form id="addProduct-form" role="form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Change User Role</label>
+                        <select class="form-control" id="roleSelect">
+                            <option value="1">Admin</option>
+                            <option value="2">Client</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="saveChange">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var users = /*[[${users}]]*/ null;
+    var username = /*[[${username}]]*/ null;
+    /*]]>*/
+
+    var changeId;
+    var $roleSelectVal = $("#roleSelect");
+
+    $( document ).ready(function() {
+        fillTable(users);
+    });
+
+    function fillBodyTable(customers, callback) {
+
+        let tbl = '';
+        tbl +='<tbody id="bodyUsersTable">';
+        $.each(users, function(index, val)
+        {
+            //you can replace with your database row id
+            var row_id = val['id'];
+            let activated = val['enabled'] != 0 ? "Yes" : "No";
+
+            let role = val['role'].id != 2 ? "Admin" : "Client";
+
+            //loop through ajax row data
+            tbl +='<tr row_id="'+row_id+'">';
+            tbl +='<td></td>';
+            tbl +='<td ><div class="row_data" col_name="name">'+val['name']+'</div></td>';
+            tbl +='<td ><div class="row_data" col_name="lastName">'+val['lastName']+'</div></td>';
+            tbl +='<td ><div class="row_data" col_name="email">'+val['username']+'</div></td>';
+            tbl +='<td ><div class="row_data" col_name="activated">'+activated+'</div></td>';
+            tbl +='<td ><div class="row_data" col_name="role">'+role+'</div></td>';
+
+            //--->edit options > start
+            tbl +='<td>';
+
+            tbl +='<span class="btn_manage" > <a href="#" class="btn btn-link " row_id="'+row_id+'" > Manage</a> </span>';
+            if(val['username'] === username) tbl +='<span class="btn_delete" > <a href="#" class="btn btn-link " row_id="'+row_id+'" > Delete</a> </span>';
+
+            tbl +='</td>';
+            //--->edit options > end
+
+            tbl +='</tr>';
+        });
+
+        tbl +='</tbody>';
+        callback(tbl);
+
+    }
+
+    function fillTable(users) {
+
+        var tbl = '';
+        tbl +='<table class="table table-hover" id="tableUsers">'
+
+        //--->create table header > start
+        tbl +='<thead>';
+        tbl +='<tr>';
+        tbl +='<th>#</th>';
+        tbl +='<th>Name</th>';
+        tbl +='<th>LastName</th>';
+        tbl +='<th>Email</th>';
+        tbl +='<th>Activated</th>';
+        tbl +='<th>Role</th>';
+        tbl +='<th>Options</th>';
+        tbl +='</tr>';
+        tbl +='</thead>';
+
+        //--->create table body rows > start
+        fillBodyTable(users, function (response) {
+            tbl += response;
+        });
+
+        //--->create table body rows > end
+
+        //--->create table body > end
+
+        tbl +='</table>';
+        //--->create data table > end
+
+        $("#tablePanel").html(tbl);
+        $("#tableUsers").DataTable({
+            "columnDefs": [
+                { "searchable": false, "targets": -1 }
+            ]
+        }).column( '1:visible' )
+            .order( 'asc' )
+            .draw();
+
+        $(".overlay").hide();
+    }
+
+    $(document).on('click', '.btn_manage', function(event) {
+        event.preventDefault();
+        let tbl_row = $(this).closest('tr');
+        var row_id = tbl_row.attr('row_id');
+
+        $("#myModal").modal();
+
+        changeId = row_id;
+    });
+
+    $(document).on('click', '.btn_delete', function(event) {
+        event.preventDefault();
+        let tbl_row = $(this).closest('tr');
+        var row_id = tbl_row.attr('row_id');
+
+        sendAjaxRequest("DELETE", "user/" + row_id, "", function (res) {
+            removeJSON(users, "id", row_id);
+            fillTable(users);
+        }, function(res) {
+            console.error('Error while deleting user');
+            console.error(res);
+        });
+    });
+
+    $("#saveChange").click( function () {
+        sendAjaxRequest("POST", "user/changeRole/" + changeId + "?role="+ $roleSelectVal.val(), "", function () {
+            changeJson(users, changeId, $roleSelectVal.val());
+            fillTable(users);
+            $("#myModal").modal().toggle();
+        }, function(res) {
+            console.error('Error while editing user');
+            console.error(res);
+        });
+    });
+
+    function sendAjaxRequest(type, url, data, onSuccess, onError) {
+        $.ajax({
+            type: type,
+            url: url,
+            success: function(res) {
+                onSuccess(res);
+            },
+            error: function(res) {
+                onError(res);
+            }
+        });
+    }
+
+    function removeJSON(arr, key, value) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i][key] == value || arr[i][key] === value) {
+                delete arr[i];
+                arr.splice(i, 1);
+                return true;
+            }
+        }
+        return null;
+    }
+
+    function changeJson(arr, id, roleId) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i].id == id) {
+                arr[i].role.id = roleId;
+            }
+        }
+    }
+
+</script>
+</body>
+</html>

@@ -10,6 +10,7 @@
     <link th:href="@{/plugins/datatables/datatables.css}" rel="stylesheet">
     <script src="/webjars/jquery/3.3.1/jquery.min.js"></script>
     <script th:src="@{/plugins/datatables/datatables.js}"></script>
+    <script th:src="@{/plugins/parsley/parsley.min.js}"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
             integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
@@ -20,6 +21,8 @@
 <div class="container theme-showcase">
     <div class="row">
         <div class="col-md-12">
+            <div class="alert alert-info" id="successMessage" hidden="hidden">
+            </div>
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     <div class="panel-title-two">
@@ -49,17 +52,23 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Edit</h4>
+                <h4 class="modal-title">Add</h4>
             </div>
-            <form id="editCustomer-form">
+            <form id="editCustomer-form" data-parsley-validate>
                 <div class="modal-body">
                 <div class="form-group">
-                    <label for="inputName">Name</label>
-                    <input type="text" class="form-control" id="inputName" placeholder="Enter firstname">
+                    <label for="inputName">Name*</label>
+                    <input type="text" class="form-control" id="inputName" placeholder="Enter name"
+                           data-parsley-errors-container="inputNameError" data-parsley-required
+                           data-parsley-minlength="2" data-parsley-trigger="blur">
+                    <span class="parsley-errors" id="inputNameError"></span>
                 </div>
                 <div class="form-group">
-                    <label for="inputEmail">Email</label>
-                    <input type="email" class="form-control" id="inputEmail" placeholder="Enter email">
+                    <label for="inputEmail">Email*</label>
+                    <input type="email" class="form-control" id="inputEmail" placeholder="Enter email"
+                           data-parsley-errors-container="inputEmailError"
+                           data-parsley-type="email" data-parsley-required data-parsley-trigger="blur">
+                    <span class="parsley-errors" id="inputEmailError"></span>
                     <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
                 </div>
                 <div class="form-group">
@@ -71,8 +80,10 @@
                     <input type="text" class="form-control" id="inputAddress" placeholder="Enter address">
                 </div>
                 <div class="form-group">
-                    <label for="inputPib">Pib</label>
-                    <input type="text" class="form-control" id="inputPib" placeholder="Enter pib">
+                    <label for="inputPib">Pib*</label>
+                    <input type="text" class="form-control" id="inputPib" placeholder="Enter pib"
+                           data-parsley-required data-parsley-length="[10, 10]" data-parsley-trigger="blur">
+                    <span class="parsley-errors" id="inputPibError"></span>
                 </div>
                 <div class="form-group">
                     <label for="inputIdNumber">Id Number</label>
@@ -80,18 +91,18 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal" id="saveCustomer">Save</button>
+                <button type="button" class="btn btn-primary" id="saveCustomer">Save</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
             </form>
         </div>
-
     </div>
 </div>
 <script th:inline="javascript">
     /*<![CDATA[*/
     var customers = /*[[${customers}]]*/ null;
 
+    const $editCustomerForm = $("#editCustomer-form");
 
     const $inputName = $("#inputName");
     const $inputEmail = $("#inputEmail");
@@ -100,14 +111,17 @@
     const $inputPib = $("#inputPib");
     const $inputIdNumber = $("#inputIdNumber");
 
+    function validateForm(idForm) {
+        idForm.parsley().validate();
+        return idForm.parsley().isValid();
+    }
+
     $( document ).ready(function() {
         fillTable(customers);
     });
 
     $('#addCus').click( function () {
-
         $("#myModal").modal();
-
     });
 
     function saveCustomer() {
@@ -131,10 +145,11 @@
         });
     }
 
-    $("#saveCustomer").click(function saveCustomerInfo(e){
-        e.preventDefault();
-        saveCustomer();
-        $("#editCustomer-form").trigger("reset");;
+    $("#saveCustomer").click(function saveCustomerInfo(){
+        if (validateForm($editCustomerForm)) {
+            saveCustomer();
+            $("#editCustomer-form").trigger("reset");
+        }
     });
 
     function findJSONItem(arr, key, value) {
@@ -357,7 +372,11 @@
             changeCustomerJson(customers, ajaxObj);
             fillTable(customers);
         }, function(res) {
-            console.error('Error while updating project\'s used at timestamp');
+            tbl_row.find('.row_data').each(function(index, val)
+            {
+                $(this).html( $(this).attr('original_entry') );
+            });
+            console.error('Error while updating customer');
             console.error(res);
         });
 

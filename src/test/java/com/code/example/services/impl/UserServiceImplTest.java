@@ -12,6 +12,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.junit.Assert.*;
 
@@ -58,5 +61,18 @@ public class UserServiceImplTest {
 
         assertEquals("User data should be same", user.getUsername(), test.getUsername());
         assertEquals("User id should be same", user.getId(), test.getId());
+    }
+
+    @Test
+    public void deleteUser() {
+
+        User user = new User();
+        user.setId(1L);
+        user.setName("Test");
+        user.setUsername("test@test.com");
+
+        userService.deleteUser(1L);
+
+        verify(userRepository, times(1)).deleteById(anyLong());
     }
 }

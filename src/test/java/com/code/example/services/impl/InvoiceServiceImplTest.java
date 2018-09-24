@@ -2,6 +2,7 @@ package com.code.example.services.impl;
 
 import com.code.example.exceptions.NotFoundException;
 import com.code.example.persistence.entities.Invoice;
+import com.code.example.persistence.entities.User;
 import com.code.example.persistence.repositories.InvoiceRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,6 +50,24 @@ public class InvoiceServiceImplTest {
     }
 
     @Test
+    public void getUserInvoicesTest() {
+
+        Invoice invoice = new Invoice();
+        invoice.setId(1L);
+        User user = new User();
+        user.setId(1L);
+        invoice.setUser(user);
+        HashSet<Invoice> invoices = new HashSet<>();
+        invoices.add(invoice);
+
+        when(invoiceService.getUserInvoices(anyLong())).thenReturn(invoices);
+
+        Set<Invoice> invoiceSet = invoiceService.getUserInvoices(1L);
+        assertNotNull("Null invoice returned", invoiceSet);
+        assertEquals(user.getId(), invoice.getUser().getId());
+    }
+
+    @Test
     public void findByIdTest() {
 
         Invoice invoice = new Invoice();
@@ -59,7 +78,7 @@ public class InvoiceServiceImplTest {
 
         Invoice invoiceReturned = invoiceService.findById(1L);
 
-        assertNotNull("Null invoice retuned", invoiceReturned);
+        assertNotNull("Null invoice returned", invoiceReturned);
         verify(invoiceRepository, times(1)).findById(anyLong());
         verify(invoiceRepository, never()).findAll();
     }

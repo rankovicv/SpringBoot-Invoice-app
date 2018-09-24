@@ -24,16 +24,12 @@ public class TokensPurgeTask {
     private final @NonNull
     VerificationTokenRepository tokenRepository;
 
-//    @Autowired
-//    PasswordResetTokenRepository passwordTokenRepository;
-
     @Scheduled(cron = "0 1 1 * * ?")
     public void purgeExpired() {
 
         log.info("Purge token start");
         Date now = Date.from(Instant.now());
 
-//        passwordTokenRepository.deleteAllExpiredSince(now);
         tokenRepository.deleteAllExpiredSince(now);
     }
 }

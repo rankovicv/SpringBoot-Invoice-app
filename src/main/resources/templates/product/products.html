@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Index</title>
+    <title>Products</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"
           th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}">
@@ -46,15 +46,17 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Add Product</h4>
             </div>
-            <form id="addProduct-form" data-toggle="validator" role="form">
+            <form id="addProduct-form" role="form" data-parsley-validate="">
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="inputName">Name</label>
-                        <input type="text" class="form-control" id="inputName" placeholder="Enter name of product">
+                        <input type="text" class="form-control" id="inputName" placeholder="Enter name of product"
+                               required data-parsley-errors-container="inputNameError" data-parsley-minlength="2">
+                        <span class="parsley-errors" id="inputNameError"></span>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" data-dismiss="modal" id="saveProduct">Save</button>
+                    <button type="button" class="btn btn-primary" id="saveProduct">Save</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </form>
@@ -68,22 +70,24 @@
 
     const $inputName = $("#inputName");
 
+    function validateForm(idForm) {
+        idForm.parsley().validate();
+        return idForm.parsley().isValid();
+    }
+
     $( document ).ready(function() {
         fillTable(products);
     });
 
-    $('#addProduct').click( function (e) {
-
+    $('#addProduct').click( function () {
         $("#myModal").modal();
-
     });
 
-    $("#saveProduct").click(function saveProductInfo(e){
-        e.preventDefault();
-        saveProduct();
-        $("#addProduct-form").trigger("reset");;
+    $("#saveProduct").click(function saveProductInfo(){
+        if (validateForm($('#addProduct-form'))) {
+            saveProduct();
+        }
     });
-
 
     function saveProduct() {
         let productJson = {
@@ -93,6 +97,8 @@
         sendAjaxRequest("POST", "rest/product", productJson, function(response) {
             products.push(response);
             fillTable(products);
+            $("#addProduct-form").trigger("reset");
+            $("#myModal").modal('toggle');
 
         }, function(res) {
             console.error('Error while saving product');
@@ -262,8 +268,12 @@
             changeProductsJson(products, ajaxObj);
             fillTable(products);
         }, function(res) {
-            console.error('Error while updating project\'s used at timestamp');
+            console.error('Error while updating product');
             console.error(res);
+            tbl_row.find('.row_data').each(function(index, val)
+            {
+                $(this).html( $(this).attr('original_entry') );
+            });
         });
 
         //out put to show

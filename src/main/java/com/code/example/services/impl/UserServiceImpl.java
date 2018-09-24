@@ -19,9 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by veljko on 9.9.18.
@@ -93,6 +91,34 @@ public class UserServiceImpl implements UserService {
         }
 
         return userOptional.get();
+    }
+
+    @Override
+    public void changeUserRole(Long userId, Long roleId) {
+
+        User user = getUser(userId);
+        Role role = new Role();
+        role.setId(roleId);
+        user.setRole(role);
+
+        userRepository.save(user);
+    }
+
+    @Override
+    public void deleteUser(Long userId) {
+
+        userRepository.deleteById(userId);
+    }
+
+    @Override
+    public Set<User> getAllUsers() {
+
+        log.debug("I'm in UserService-getAllUsers");
+
+        Set<User> users = new HashSet<>();
+        userRepository.findAll().iterator().forEachRemaining(users :: add);
+
+        return users;
     }
 
     @Override

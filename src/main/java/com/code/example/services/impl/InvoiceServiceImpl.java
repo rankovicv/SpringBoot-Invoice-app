@@ -36,6 +36,16 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
+    public Set<Invoice> getUserInvoices(Long userId) {
+        log.debug("I'm in getUserInvoices-InvoiceService");
+
+        Set<Invoice> invoices = new HashSet<>();
+        invoiceRepository.findByUser_Id(userId).iterator().forEachRemaining(invoices::add);
+
+        return invoices;
+    }
+
+    @Override
     public Invoice findById(Long id) {
 
         Optional<Invoice> invoice = invoiceRepository.findById(id);

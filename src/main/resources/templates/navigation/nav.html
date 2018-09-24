@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
     <head>
         <meta charset="UTF-8">
         <title>Index</title>
@@ -42,8 +43,8 @@
                                 <li class="dropdown-header">Edit</li>
                                 <li><a href="/user/edit" th:href="@{/user/edit}">User</a></li>
                                 <li><a href="/user/company/edit"  th:href="@{/user/company/edit}">Company</a></li>
-                                <li role="separator" class="divider"></li>
-                                <li><a href="#">Admin page</a></li>
+                                <li role="separator" class="divider" sec:authorize="hasRole('ROLE_ADMIN')"></li>
+                                <li sec:authorize="hasAuthority('ADMIN')"><a href="/admin"  th:href="@{/admin}">Admin page</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href="/logout">Logout</a></li>
                             </ul>
