@@ -75,7 +75,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Add Product</h4>
+                <h4 class="modal-title">Change password</h4>
             </div>
             <form id="changePassword-form" data-parsley-validate="" role="form">
                 <div class="modal-body">
@@ -159,11 +159,10 @@
             console.log(res);
             checkPass = res;
             if(checkPass === true) {
-                $successMessage.html("Successfully saved");
-                $successMessage.show().delay(5000).fadeOut();
+                $('#oldPasswordError').text('');
+                $('#savePasswordChange').removeAttr('disabled');
             } else {
-                $successMessage.html("Error");
-                $successMessage.show().delay(5000).fadeOut();
+                $('#oldPasswordError').text('Incorrect password.');
             }
         }, function(res) {
             console.error('Error');
@@ -184,7 +183,8 @@
                 data: $inputNewPassword.val(),
                 contentType : "text/plain",
                 success: function(res) {
-                    $successPasswordMsg.html("New password saved!");
+                    $successMessage.html("Successfully saved");
+                    $successMessage.show().delay(5000).fadeOut();
                     $("#passwordModal").modal('toggle');
                 },
                 error: function(res) {

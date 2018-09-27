@@ -1,5 +1,6 @@
 package com.code.example.persistence.entities;
 
+import com.code.example.util.CurrencyEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
@@ -25,6 +26,8 @@ public class Invoice {
 
     private Double total;
 
+    private CurrencyEnum currency;
+
     @ManyToOne
     private Customer customer;
 
@@ -32,5 +35,10 @@ public class Invoice {
     @JsonIgnore
     @JoinColumn(name = "user_id")
     private User user;
+
+    public Invoice() {
+        super();
+        this.currency = CurrencyEnum.EUR;
+    }
 
 }

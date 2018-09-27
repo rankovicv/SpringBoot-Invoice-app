@@ -17,5 +17,9 @@ public interface InvoiceService {
 
     Invoice saveInvoice(Invoice invoice);
 
+    Invoice addNewInvoice(Long userId);
+
+    void updateInvoiceTotal(Long invoiceId);
+
     void deleteById(Long id);
 }

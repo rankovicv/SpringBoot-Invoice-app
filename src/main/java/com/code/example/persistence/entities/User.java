@@ -25,7 +25,6 @@ public class User {
     @NotEmpty(message = "*Please provide an email")
     private String username;
 
-//    @Length(min = 5, message = "*Your password must have at least 5 characters")
     @Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-Z])[\\s\\S\\d]{8,}", message = "Must be a little complicated")
     @NotEmpty(message = "*Please provide your password")
     private String password;
@@ -38,7 +37,7 @@ public class User {
 
     private boolean enabled;
 
-    @ManyToOne
+    @ManyToOne()
     private Role role;
 
     public User() {

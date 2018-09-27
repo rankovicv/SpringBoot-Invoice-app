@@ -4,6 +4,7 @@ import com.code.example.exceptions.NotFoundException;
 import com.code.example.persistence.entities.Product;
 import com.code.example.persistence.entities.User;
 import com.code.example.persistence.repositories.ProductRepository;
+import com.code.example.persistence.repositories.SaleRepository;
 import com.code.example.services.ProductService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,9 @@ public class ProductServiceImpl implements ProductService {
 
     private final @NonNull
     ProductRepository productRepository;
+
+    private final @NonNull
+    SaleRepository saleRepository;
 
     @Override
     public Set<Product> getProducts() {
@@ -66,6 +70,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteById(Long id) {
+
         productRepository.deleteById(id);
     }
 }

@@ -1,15 +1,15 @@
 package com.code.example.util;
 
 /**
- * Created by veljko on 22.9.18.
+ * Created by veljko on 26.9.18.
  */
-public enum UnitEnum {
+public enum CurrencyEnum {
 
-    PIECE(0), HOUR(1), DAY(2);
+    EUR(0), USD(1), RSD(2);
 
     private final int number;
 
-    private UnitEnum(int number) {
+    private CurrencyEnum(int number) {
         this.number = number;
     }
 

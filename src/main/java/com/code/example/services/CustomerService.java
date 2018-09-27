@@ -2,6 +2,7 @@ package com.code.example.services;
 
 import com.code.example.persistence.entities.Customer;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -11,7 +12,7 @@ public interface CustomerService {
 
     Set<Customer> getCustomers();
 
-    Set<Customer> getCustomersByUser(Long userId);
+    List<Customer> getCustomersByUser(Long userId);
 
     Customer findById(Long id);
 

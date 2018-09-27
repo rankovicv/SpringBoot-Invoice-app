@@ -26,8 +26,37 @@ table tbody tr td:first-child::before {
 .enabled a{
     color: #337ab7 !important;
 }
+.select2 {
+    width:100%!important;
+}
 
-
+#changeCustomer {
+    cursor: pointer;
+}
+.hideclass {
+    display: none;
+}
+.sub-header {
+    padding-right: 30px;
+    font-size: 30px;
+    font-family: inherit;
+    font-weight: 500;
+    line-height: 1.1;
+    color: inherit;
+}
+.currency-select {
+    padding-left: 20px;
+    width: 200px;
+    display: inline-block;
+}
+.invoice-footer {
+    padding-top: 20px;
+ }
+.invoice-amount {
+    width: 250px;
+    display: inline-block;
+    font-size: 18px;
+}
 /*Customers part*/
 .customer-edit {
     display: inline-block;

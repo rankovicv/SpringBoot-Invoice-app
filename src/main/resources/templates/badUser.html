@@ -23,7 +23,6 @@
             <div th:if="${expired}">
                 <br/>
                 <div class="form-group">
-                    <label>Reset Token</label>
                     <button onclick="resetToken()" class="btn btn-info">Reset</button>
                 </div>
                 <script th:inline="javascript">
@@ -32,7 +31,7 @@
 
                         function resetToken() {
                             var token = [[${param.token}]];
-                            $.get(serverContext + "user/resetRegistrationToken?token=" + token, function (data) {
+                            $.get(serverContext + "registration/resetRegistrationToken?token=" + token, function (data) {
                                 window.location.href = serverContext + "login?message=" + data.message;
                             })
                                 .fail(function (data) {
@@ -51,7 +50,7 @@
                 <div class="form-group">
                     <label for="resendEmail">Insert your email if your account is not activated</label>
                     <input type="text" id="resendEmail">
-                    <button onclick="resendToken()">Send activation token</button>
+                    <button onclick="resendToken()" class="btn btn-info">Send activation token</button>
                 </div>
                 <script th:inline="javascript">
                     /*<![CDATA[*/
@@ -59,7 +58,7 @@
                     var serverContext = [[@{/}]];
 
                         function resendToken() {
-                            $.get(serverContext + "user/resendRegistrationToken?email=" + $resendInput.val(), function (data) {
+                            $.get(serverContext + "registration/resendRegistrationToken?email=" + $resendInput.val(), function (data) {
                                 window.location.href = serverContext + "login?message=" + data.message;
                             })
                                 .fail(function (data) {

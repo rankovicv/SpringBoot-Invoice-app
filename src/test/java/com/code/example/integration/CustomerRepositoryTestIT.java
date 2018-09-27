@@ -26,23 +26,6 @@ public class CustomerRepositoryTestIT {
 
     @Before
     public void setUp() {
-//        Product product1 = new Product();
-//        product1.setName("Xiaomi MiBand 2");
-//        product1.setPrice(18.25);
-//        product1.setQuantity(105);
-//        productRepository.save(product1);
-//
-//        Product product2 = new Product();
-//        product2.setName("H4 Swimming Fitness Bracelet");
-//        product2.setPrice(18.12);
-//        product2.setQuantity(10);
-//        productRepository.save(product2);
-//
-//        Product product3 = new Product();
-//        product3.setName("Lungfish High-speed FLAT HDMI cable 30cm");
-//        product3.setPrice(0.78);
-//        product3.setQuantity(997);
-//        productRepository.save(product3);
     }
 
     @Test

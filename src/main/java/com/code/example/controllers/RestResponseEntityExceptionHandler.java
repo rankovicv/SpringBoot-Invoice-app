@@ -36,8 +36,6 @@ import java.util.Objects;
 @RestControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @Autowired
-    private MessageSource messages;
 
     @Override
     protected ResponseEntity<Object> handleBindException(final BindException ex, final HttpHeaders headers, final HttpStatus status, final WebRequest request) {

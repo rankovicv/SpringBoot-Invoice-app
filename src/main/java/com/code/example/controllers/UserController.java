@@ -63,8 +63,8 @@ public class UserController {
     @GetMapping("/company/edit")
     public String getUserCompanyAddPage(Model model) {
 
-        CurrentUser myUserDetails = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserCompany userCompany = userService.getUserCompany(myUserDetails.getUserId());
+        CurrentUser authUser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserCompany userCompany = userService.getUserCompany(authUser.getUserId());
 
         if(userCompany == null) {
             model.addAttribute("userCompany", new UserCompany());
@@ -80,14 +80,18 @@ public class UserController {
     @PostMapping("/edit")
     public ResponseEntity<String> saveUserData(@Valid @RequestBody UserCommand userCommand) {
 
-        CurrentUser myUserDetails = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        userCommand.setId(myUserDetails.getUserId());
+        CurrentUser authUser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        userCommand.setId(authUser.getUserId());
 
-        userService.saveUserCommand(userCommand);
+        try {
+            userService.saveUserCommand(userCommand);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
-        myUserDetails.setName(userCommand.getName());
-        myUserDetails.setLastName(userCommand.getLastName());
-        CurrentUser.updateUser(myUserDetails);
+        authUser.setName(userCommand.getName());
+        authUser.setLastName(userCommand.getLastName());
+        CurrentUser.updateUser(authUser);
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
@@ -95,9 +99,9 @@ public class UserController {
     @GetMapping("/edit")
     public String getUserEdit(Model model) {
 
-        CurrentUser myUserDetails = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser authUser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        UserCommand userCommand = userService.findUserById(myUserDetails.getUserId());
+        UserCommand userCommand = userService.findUserById(authUser.getUserId());
 
         model.addAttribute("user", userCommand);
 
@@ -108,36 +112,18 @@ public class UserController {
     @GetMapping("/checkPassword")
     public boolean getPasswordHash(@RequestParam(value = "oldPass") String pass) {
 
-        CurrentUser myUserDetails = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser authUser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        return userService.checkPassword(myUserDetails.getUserId(), pass);
+        return userService.checkPassword(authUser.getUserId(), pass);
     }
 
     @ResponseBody
     @PostMapping(value = "/changePassword", consumes = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> changeUserPassword(@RequestBody String pass) {
 
-        CurrentUser myUserDetails = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser authUser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-       userService.changeUserPassword(pass, myUserDetails.getUserId());
-
-        return new ResponseEntity<>("OK", HttpStatus.OK);
-    }
-
-    @ResponseBody
-    @PostMapping(value = "changeRole/{id}")
-    public ResponseEntity<String> changeUserRole(@PathVariable String id,@RequestParam(value = "role") String role) {
-
-        userService.changeUserRole(Long.parseLong(id), Long.parseLong(role));
-
-        return new ResponseEntity<>("OK", HttpStatus.OK);
-    }
-
-    @ResponseBody
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable String id) {
-
-        userService.deleteUser(Long.parseLong(id));
+        userService.changeUserPassword(pass, authUser.getUserId());
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }

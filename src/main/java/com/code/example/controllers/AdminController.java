@@ -7,12 +7,12 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
@@ -21,13 +21,14 @@ import java.util.Set;
  */
 @Slf4j
 @Controller
+@RequestMapping(path = "admin")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AdminController {
 
     private final @NonNull
     UserService userService;
 
-    @GetMapping("/admin")
+    @GetMapping()
     public String getAdminPage(Model model) {
 
         CurrentUser authUser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -38,6 +39,25 @@ public class AdminController {
         model.addAttribute("username", authUser.getUsername());
 
         return "admin/admin";
+    }
+
+
+    @ResponseBody
+    @PostMapping(value = "/changeRole/{id}")
+    public ResponseEntity<String> changeUserRole(@PathVariable String id, @RequestParam(value = "role") String role) {
+
+        userService.changeUserRole(Long.parseLong(id), Long.parseLong(role));
+
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
+    @ResponseBody
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable String id) {
+
+        userService.deleteUser(Long.parseLong(id));
+
+        return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
 }

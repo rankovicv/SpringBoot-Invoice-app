@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Data
-public class Customer extends Company{
+public class Customer extends Company {
 
     @ManyToOne
     @JsonIgnore

@@ -4,6 +4,7 @@ import com.code.example.exceptions.NotFoundException;
 import com.code.example.persistence.entities.Product;
 import com.code.example.persistence.entities.User;
 import com.code.example.persistence.repositories.ProductRepository;
+import com.code.example.persistence.repositories.SaleRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -28,11 +29,14 @@ public class ProductServiceImplTest {
     @Mock
     ProductRepository productRepository;
 
+    @Mock
+    SaleRepository saleRepository;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        productService = new ProductServiceImpl(productRepository);
+        productService = new ProductServiceImpl(productRepository, saleRepository);
     }
 
     @Test

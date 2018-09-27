@@ -7,9 +7,12 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath('gradle.plugin.com.palantir.gradle.docker:gradle-docker:0.20.1')
     }
 }
-
+plugins {
+    id "com.palantir.docker" version "0.20.1"
+}
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
@@ -23,9 +26,18 @@ repositories {
     mavenCentral()
 }
 
+docker {
+    dependsOn build
+    name "${project.group}/${bootJar.baseName}"
+    files bootJar.archivePath
+    buildArgs(['JAR_FILE': "${bootJar.archiveName}"])
+}
+
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
+    compile 'org.hibernate:hibernate-entitymanager:5.0.10.Final'
+    compile 'org.hibernate:hibernate-core:5.0.10.Final'
     compile('org.springframework.boot:spring-boot-starter-security')
     compile('org.thymeleaf.extras:thymeleaf-extras-springsecurity4')
     compile('org.springframework.boot:spring-boot-starter-thymeleaf')

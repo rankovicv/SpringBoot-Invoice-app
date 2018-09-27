@@ -1,8 +1,10 @@
 package com.code.example.controllers;
 
-import com.code.example.persistence.entities.*;
+import com.code.example.persistence.entities.Customer;
+import com.code.example.persistence.entities.Invoice;
+import com.code.example.persistence.entities.Product;
+import com.code.example.persistence.entities.UserCompany;
 import com.code.example.security.CurrentUser;
-import com.code.example.mail.EmailService;
 import com.code.example.services.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +15,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -67,9 +70,9 @@ public class IndexController {
         log.debug("Customers page open");
 
         CurrentUser myUserDetails = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Set<Customer> customerSet = customerService.getCustomersByUser(myUserDetails.getUserId());
+        List<Customer> customers = customerService.getCustomersByUser(myUserDetails.getUserId());
 
-        model.addAttribute("customers", customerSet);
+        model.addAttribute("customers", customers);
 
         return "customer/customers";
     }
@@ -86,6 +89,15 @@ public class IndexController {
         return "product/products";
     }
 
+    @GetMapping("/invoice/add")
+    public String addNewInvoice() {
+
+        CurrentUser authUser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Invoice newInvoice = invoiceService.addNewInvoice(authUser.getUserId());
+
+        return "redirect:show/" + newInvoice.getId();
+    }
 
     @GetMapping("/invoice/show/{id}")
     public String showById(@PathVariable String id, Model model) {
@@ -94,10 +106,13 @@ public class IndexController {
 
         UserCompany userCompany = userService.getUserCompany(authUser.getUserId());
         Invoice invoice = invoiceService.findById(new Long(id));
+        List<Customer> customers = customerService.getCustomersByUser(authUser.getUserId());
 
         model.addAttribute("invoice", invoice);
         model.addAttribute("userCompany", userCompany);
+        model.addAttribute("customers", customers);
         model.addAttribute("sales", saleService.getSalesByInvoice(invoice));
+        model.addAttribute("products", productService.getProductsByUser(authUser.getUserId()));
 
         return "invoice/show";
     }

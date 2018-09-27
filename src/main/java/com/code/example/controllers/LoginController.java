@@ -101,7 +101,7 @@ public class LoginController {
         return "badUser";
     }
 
-    @RequestMapping(value = "/user/resetRegistrationToken", method = RequestMethod.GET)
+    @RequestMapping(value = "/registration/resetRegistrationToken", method = RequestMethod.GET)
     @ResponseBody
     public GenericResponse resetRegistrationToken(final HttpServletRequest request, @RequestParam("token") final String existingToken) {
         final VerificationToken newToken = userService.generateNewVerificationToken(existingToken);
@@ -112,17 +112,20 @@ public class LoginController {
         return new GenericResponse(messages.getMessage("message.resendToken", null, request.getLocale()));
     }
 
-    @RequestMapping(value = "/user/resendRegistrationToken", method = RequestMethod.GET)
+    @RequestMapping(value = "/registration/resendRegistrationToken", method = RequestMethod.GET)
     @ResponseBody
-    public GenericResponse resendRegistrationToken(final HttpServletRequest request, @RequestParam("email") final String email) {
+    public String resendRegistrationToken(final HttpServletRequest request, @RequestParam("email") final String email) {
         final User user = userService.findUserByEmail(email);
 
+        if(user.isEnabled()) {
+            return "redirect:login";
+        }
         final String token = UUID.randomUUID().toString();
         userService.createVerificationTokenForUser(user, token);
 
         constructEmailMessage(request.getLocale(), user, token);
 
-        return new GenericResponse(messages.getMessage("message.resendToken", null, request.getLocale()));
+        return "Token send";
     }
 
     @RequestMapping(value = "/access-denied", method = RequestMethod.GET)

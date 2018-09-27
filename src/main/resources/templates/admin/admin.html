@@ -97,7 +97,7 @@
             tbl +='<td>';
 
             tbl +='<span class="btn_manage" > <a href="#" class="btn btn-link " row_id="'+row_id+'" > Manage</a> </span>';
-            if(val['username'] === username) tbl +='<span class="btn_delete" > <a href="#" class="btn btn-link " row_id="'+row_id+'" > Delete</a> </span>';
+            if(val['username'] !== username) tbl +='<span class="btn_delete" > <a href="#" class="btn btn-link " row_id="'+row_id+'" > Delete</a> </span>';
 
             tbl +='</td>';
             //--->edit options > end
@@ -167,7 +167,7 @@
         let tbl_row = $(this).closest('tr');
         var row_id = tbl_row.attr('row_id');
 
-        sendAjaxRequest("DELETE", "user/" + row_id, "", function (res) {
+        sendAjaxRequest("DELETE", "admin/" + row_id, "", function (res) {
             removeJSON(users, "id", row_id);
             fillTable(users);
         }, function(res) {
@@ -177,10 +177,10 @@
     });
 
     $("#saveChange").click( function () {
-        sendAjaxRequest("POST", "user/changeRole/" + changeId + "?role="+ $roleSelectVal.val(), "", function () {
+        sendAjaxRequest("POST", "admin/changeRole/" + changeId + "?role="+ $roleSelectVal.val(), "", function () {
             changeJson(users, changeId, $roleSelectVal.val());
             fillTable(users);
-            $("#myModal").modal().toggle();
+            $("#myModal").modal('toggle');
         }, function(res) {
             console.error('Error while editing user');
             console.error(res);

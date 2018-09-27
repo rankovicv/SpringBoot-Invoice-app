@@ -3,6 +3,7 @@ package com.code.example.services;
 import com.code.example.persistence.entities.Invoice;
 import com.code.example.persistence.entities.Sale;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -12,7 +13,7 @@ public interface SaleService {
 
     Set<Sale> getSales();
 
-    Set<Sale> getSalesByInvoice(Invoice invoice);
+    List<Sale> getSalesByInvoice(Invoice invoice);
 
     Sale findById(Long id);
 

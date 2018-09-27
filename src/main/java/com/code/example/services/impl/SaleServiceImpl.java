@@ -11,9 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by veljko on 23.8.18.
@@ -37,9 +35,9 @@ public class SaleServiceImpl implements SaleService {
     }
 
     @Override
-    public Set<Sale> getSalesByInvoice(Invoice invoice) {
+    public List<Sale> getSalesByInvoice(Invoice invoice) {
 
-        Set<Sale> saleSet = new HashSet<>();
+        List<Sale> saleSet = new ArrayList<>();
         saleRepository.findSalesByInvoice(invoice).iterator().forEachRemaining(saleSet::add);
 
         return saleSet;

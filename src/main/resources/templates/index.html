@@ -28,7 +28,7 @@
                         <h1 class="panel-title">Your Invoices</h1>
                     </div>
                     <div class="panel-btn">
-                        <a href="#" class="btn btn-info" id="newInvoice">
+                        <a href="#" th:href="@{'/invoice/add'}" class="btn btn-info" id="newInvoice">
                             New invoice
                         </a>
                     </div>
@@ -59,7 +59,10 @@
                             <tr th:each="invoice : ${invoices}">
                                 <td></td>
                                 <td th:text="${invoice.invoiceNumber}">ime neko</td>
-                                <td th:text="${invoice.customer.name}">ime nekog kupca</td>
+                                <td>
+                                    <span th:if="${invoice.customer != null}" th:text="${invoice.customer.name}">ime nekog kupca</span>
+                                    <span th:if="${invoice.customer == null}"></span>
+                                </td>
                                 <td th:text="${#dates.format(invoice.time, 'dd-MM-yyyy')}"></td>
                                 <td><a href="#" th:href="@{'/invoice/show/' + ${invoice.id}}">View</a></td>
                             </tr>

@@ -73,11 +73,13 @@ public class SaleServiceImplTest {
         sale.setId(2L);
         sale1.setInvoice(invoice);
 
-        Set<Sale> sales = Stream.of(sale, sale1).collect(Collectors.toSet());
+        List<Sale> sales = new ArrayList<>();
+        sales.add(sale);
+        sales.add(sale1);
 
         when(saleService.getSalesByInvoice(invoice)).thenReturn(sales);
 
-        Set<Sale> returnSales = saleService.getSalesByInvoice(invoice);
+        List<Sale> returnSales = saleService.getSalesByInvoice(invoice);
 
         assertEquals(Long.valueOf(1L), returnSales.iterator().next().getInvoice().getId());
         assertEquals(2, returnSales.size());

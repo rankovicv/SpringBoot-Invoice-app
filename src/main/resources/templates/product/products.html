@@ -289,11 +289,9 @@
 
         var row_id = tbl_row.attr('row_id');
 
-        sendAjaxRequest("DELETE", "rest/product/"+ row_id, "", function (res) {
-            if(res) {
-                removeJSON(products, "id", row_id);
-                fillTable(products);
-            }
+        sendAjaxRequest("DELETE", "rest/product/"+ row_id, "", function () {
+            removeJSON(products, "id", row_id);
+            fillTable(products);
         }, function(res) {
             console.error('Error while deleting customer');
             console.error(res);
@@ -315,7 +313,6 @@
             url: url,
             data: JSON.stringify(data),
             contentType : 'application/json; charset=utf-8',
-            dataType : 'json',
             success: function(res) {
                 onSuccess(res);
             },

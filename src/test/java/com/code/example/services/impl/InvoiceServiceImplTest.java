@@ -4,6 +4,7 @@ import com.code.example.exceptions.NotFoundException;
 import com.code.example.persistence.entities.Invoice;
 import com.code.example.persistence.entities.User;
 import com.code.example.persistence.repositories.InvoiceRepository;
+import com.code.example.persistence.repositories.SaleRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -26,11 +27,14 @@ public class InvoiceServiceImplTest {
     @Mock
     InvoiceRepository invoiceRepository;
 
+    @Mock
+    SaleRepository saleRepository;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        invoiceService = new InvoiceServiceImpl(invoiceRepository);
+        invoiceService = new InvoiceServiceImpl(invoiceRepository, saleRepository);
     }
 
     @Test

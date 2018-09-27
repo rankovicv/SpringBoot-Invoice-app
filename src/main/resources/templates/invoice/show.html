@@ -9,19 +9,21 @@
           th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}">
     <link th:href="@{/css/style.css}" rel="stylesheet">
     <link th:href="@{/plugins/datatables/datatables.css}" rel="stylesheet">
+    <link th:href="@{/plugins/select2/select2.min.css}" rel="stylesheet">
     <script src="/webjars/jquery/3.3.1/jquery.min.js"></script>
     <script th:src="@{/plugins/datatables/datatables.js}"></script>
+    <script th:src="@{/plugins/select2/select2.min.js}"></script>
         <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
             integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
             crossorigin="anonymous" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
-
 </head>
 <body>
 <div th:replace="navigation/nav :: nav"></div>
 <div class="container theme-showcase">
     <div class="page-header">
-        <h2  th:text="${'Invoice number: ' + invoice.invoiceNumber}"></h2>
+        <span class="sub-header"  th:text="${'Invoice number: ' + invoice.invoiceNumber}"></span>
+        <!--<button class="btn btn-danger btn-remove" id="deleteInvoice">Delete Invoice</button>-->
     </div>
     <div class="container-fluid" style="margin-top: 20px">
         <div class="row">
@@ -65,29 +67,30 @@
                             <h3 class="panel-title"> Customer: </h3>
                         </div>
                         <div class="panel-two">
-                            <span class="glyphicon glyphicon-edit"></span>
+                            <a th:if="${customers.isEmpty()}" href="#" th:href="@{'/customers'}">Add</a>
+                            <span th:if="${!customers.isEmpty()}" class="glyphicon glyphicon-pencil" id="changeCustomer"></span>
                         </div>
                     </div>
-                    <div class="panel-body">
+                    <div class="panel-body" th:if="${invoice.customer != null}" th:classappend="${invoice.customer == null} ? hideclass" id="customerData">
                         <div class="row">
                             <label class="col-sm-4 col-form-label">Name : </label>
-                            <div class="col-sm-8" th:text="${invoice.customer.name}"></div>
+                            <div class="col-sm-8" id="cusName" th:text="${invoice.customer.name}"></div>
                         </div>
                         <div class="row">
                             <label class="col-sm-4 col-form-label">Email : </label>
-                            <div class="col-sm-8" th:text="${invoice.customer.email}"></div>
+                            <div class="col-sm-8" id="cusEmail" th:text="${invoice.customer.email}"></div>
                         </div>
                         <div class="row">
                             <label class="col-sm-4 col-form-label">Phone : </label>
-                            <div class="col-sm-8" th:text="${invoice.customer.phone}"></div>
+                            <div class="col-sm-8" id="cusPhone" th:text="${invoice.customer.phone}"></div>
                         </div>
                         <div class="row">
                             <label class="col-sm-4 col-form-label">Adress : </label>
-                            <div class="col-sm-8" th:text="${invoice.customer.address}"></div>
+                            <div class="col-sm-8" id="cusAddress" th:text="${invoice.customer.address}"></div>
                         </div>
                         <div class="row">
                             <label class="col-sm-4 col-form-label">PIB : </label>
-                            <div class="col-sm-8" th:text="${invoice.customer.pib}"></div>
+                            <div class="col-sm-8" id="cusPib" th:text="${invoice.customer.pib}"></div>
                         </div>
                     </div>
                 </div>
@@ -103,47 +106,363 @@
                 </div>
             </div>
         </div>
-        <h2 class="sub-header">Invoice sale</h2>
+        <div class="page-header">
+            <span class="sub-header">Items</span>
+            <span th:if="${products.isEmpty()}">Need to add some products first! <a href="#" th:href="@{'/products'}">Here</a> </span>
+            <button th:if="${!products.isEmpty()}" class="btn btn-primary" id="addNewSale">Add Product to Invoice</button>
+        </div>
         <div class="table-responsive">
             <table class="table table-striped" id="myTable">
                 <thead>
                 <tr>
                     <th>#</th>
                     <th>Product</th>
+                    <th>Unit of measurement</th>
                     <th>Quantity</th>
                     <th>Amount</th>
                     <th>Total amount</th>
                     <th>Edit</th>
                 </tr>
                 </thead>
-                <tbody>
-                <tr th:each="sale: ${sales}">
-                    <td th:text="${sale.id}">1,001</td>
-                    <td th:text="${sale.product.name}">Lorem</td>
-                    <td th:text="${sale.quantity}">sit</td>
-                    <td th:text="${sale.product.price}">ipsum</td>
-                    <td th:text="${sale.totalAmount}">dolor</td>
-                    <td>
-                        <span class="glyphicon glyphicon-edit editSale"></span>
-                        <span class="glyphicon glyphicon-trash deleteSale"></span>
-                        <button type="button" class="btn btn-default btn-sm diskSave">
-                            <span class="glyphicon glyphicon-floppy-saved"></span> Disk Saved
-                        </button>
-                    </td>
-                </tr>
+                <tbody id="bodySales">
                 </tbody>
             </table>
-            <button class="btn btn-primary" id="addNewSale">Add</button>
+            <div class="invoice-footer">
+                <label class="col-form-label">Total Amount:</label>
+                <div class="invoice-amount">
+                    <input id="amountInvoice" readonly value="0">
+                </div>
+                <div class="currency-select">
+                    <select id="selectCurrency" class="form-control">
+                        <option value="0">EUR</option>
+                        <option value="1">USD</option>
+                        <option value="2">RSD</option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+<div id="customersModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add Customer to Invoice</h4>
+            </div>
+            <form id="addCustomer-form" role="form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Select Product</label>
+                        <select id="cusSelect" class="form-control"></select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="saveCustomer">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+<div id="salesModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add Product to Invoice</h4>
+            </div>
+            <form id="addSales-form" role="form">
+                <div class="modal-body">
+                    <input type="hidden" id="idSales">
+                    <div class="form-group">
+                        <label>Select Product</label>
+                        <select id="selectProduct" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Unit of measurement</label>
+                        <select id="selectUnit" class="form-control">
+                            <option value="0">PIECE</option>
+                            <option value="1">HOUR</option>
+                            <option value="2">DAY</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" class="form-control" id="quantityInput">
+                    </div>
+                    <div class="form-group">
+                        <label>Amount</label>
+                        <input type="number" class="form-control" id="amountInput">
+                    </div>
+                    <div class="form-group">
+                        <label>Total amount</label>
+                        <input type="number" class="form-control" id="totalInput" readonly>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="saveSale">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
 </body>
-<script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var contextRoot = /*[[@{/}]]*/ '';
 
-    // var table = $('myTable').DataTable();
+    var invoice = /*[[${invoice}]]*/ null;
+    var sales = /*[[${sales}]]*/ null;
+    var customers = /*[[${customers}]]*/ null;
+    var products = /*[[${products}]]*/ null;
 
-    $(".editSale").click(function editSale() {
+    var $deleteInvoice = $("#deleteInvoice");
 
+    var $optionsCus = $('#cusSelect');
+    var $selectProduct = $('#selectProduct');
+
+    var $cusName = $('#cusName');
+    var $cusEmail = $('#cusEmail');
+    var $cusPhone = $('#cusPhone');
+    var $cusAddress = $('#cusAddress');
+    var $cusPib = $('#cusPib');
+
+    var $quantityInput = $("#quantityInput");
+    var $amountInput = $("#amountInput");
+    var $totalInput = $("#totalInput");
+    var $selectUnit = $("#selectUnit");
+    var $selectProduct = $("#selectProduct");
+    var $idSales = $("#idSales");
+
+    var $saveSale = $("#saveSale");
+
+
+    $.each(customers, function() {
+        $optionsCus.append($("<option />").val(this.id).text(this.name));
+    });
+
+    $optionsCus.select2();
+
+    $.each(products, function() {
+        $selectProduct.append($("<option />").val(this.id).text(this.name));
+    });
+
+    $selectProduct.select2();
+
+    /*]]>*/
+
+    $amountInput.change( function () {
+        $totalInput.val($amountInput.val() * $quantityInput.val());
+    });
+
+    $quantityInput.change( function () {
+        $totalInput.val($amountInput.val() * $quantityInput.val());
+    });
+
+    $("#addNewSale").click(function addSale() {
+        $("#salesModal").modal();
+        $("#addSales-form").trigger("reset");
     })
+
+    $("#changeCustomer").click(function changeCusClick() {
+        $("#customersModal").modal();
+    });
+
+    $( document ).ready(function() {
+        fillBodyTable(sales);
+    });
+
+    function fillBodyTable(salesList) {
+        $("#bodySales").html('');
+        let total = 0;
+        let tbl = '';
+        $.each(salesList, function(index, val)
+        {
+            //you can replace with your database row id
+            var row_id = val.id;
+
+            //loop through ajax row data
+            tbl +='<tr row_id="'+row_id+'">';
+            tbl +='<td></td>';
+            tbl +='<td ><div class="row_data" col_name="name">'+val.product.name+'</div></td>';
+            tbl +='<td ><div class="row_data" col_name="unit">'+val.unitOfMeasure+'</div></td>';
+            tbl +='<td ><div class="row_data" col_name="quantity">'+val.quantity+'</div></td>';
+            tbl +='<td ><div class="row_data" col_name="price">'+val.price+'</div></td>';
+            tbl +='<td ><div class="row_data" col_name="amount">'+val.totalAmount+'</div></td>';
+
+            //--->edit options > start
+            tbl +='<td>';
+
+            tbl +='<span class="btn_edit" > <a href="#" class="btn btn-link " row_id="'+row_id+'" > Edit</a> </span>';
+            tbl +='<span class="btn_delete" > <a href="#" class="btn btn-link " row_id="'+row_id+'" > Remove</a> </span>';
+
+            tbl +='</td>';
+            //--->edit options > end
+
+            tbl +='</tr>';
+
+            total += val.totalAmount;
+        });
+
+        $("#bodySales").html(tbl);
+        $("#amountInvoice").val(total);
+    }
+
+    function changeCustomer(customer) {
+        $cusName.text(customer.name);
+        $cusEmail.text(customer.email);
+        $cusPhone.text(customer.phone);
+        $cusAddress.text(customer.address);
+        $cusPib.text(customer.pib);
+
+        $("#customersModal").modal('toggle');
+    }
+
+    $("#saveCustomer").click(function editCus() {
+        let customerId = $optionsCus.val();
+
+        sendAjaxRequest("POST", contextRoot + "rest/invoice/" + invoice.id + "/saveCustomer?customer=" + customerId, "", function() {
+            invoice.customer = findJSONItem(customers, "id", customerId);
+            changeCustomer(invoice.customer);
+            $("#customerData").removeClass("hideclass");
+        }, function(res) {
+            console.error('Error while updating invoice');
+            console.error(res);
+        });
+    });
+
+    $deleteInvoice.click( function deletingInvoice() {
+        sendAjaxRequest("DELETE", contextRoot + "rest/invoice/"+ invoice.id, "", function () {
+            window.location.href = "/";
+        }, function(res) {
+            console.error('Error while deleting customer');
+            console.error(res);
+        });
+    });
+
+    function fillAddSaleForm(row_id) {
+        let sale = findJSONItem(sales, "id", row_id);
+        let unit = sale.unitOfMeasure;
+
+        $selectUnit.val(unit == 'PIECE' ? '0' : unit == 'HOUR' ? '1' : '2').change();
+        $selectProduct.val(sale.product.id).change();
+        $quantityInput.val(sale.quantity);
+        $amountInput.val(sale.price);
+        $totalInput.val(sale.totalAmount);
+        $idSales.val(sale.id);
+
+        $("#salesModal").modal();
+    }
+
+    $(document).on('click', '.btn_edit', function(event) {
+        event.preventDefault();
+        let tbl_row = $(this).closest('tr');
+        let row_id = tbl_row.attr('row_id');
+
+        fillAddSaleForm(row_id);
+    });
+
+    $saveSale.click( function saveSaleFunction() {
+        let selectedProduct = findJSONItem(products, "id", $selectProduct.val());
+        var json = {
+            product : selectedProduct,
+            quantity : $quantityInput.val(),
+            price: $amountInput.val(),
+            totalAmount: $totalInput.val(),
+            unitOfMeasure : $selectUnit.val()
+        };
+
+        if($idSales.val() != "") json.id = $idSales.val();
+        sendAjaxRequest("POST", contextRoot + "rest/invoice/" + invoice.id + "/sale" , json, function(response) {
+            $("#addSales-form").trigger('reset');
+            $("#salesModal").modal('toggle');
+            if($idSales.val() == "") {
+                sales.push(response);
+            } else {
+                removeJSON(sales, "id", json.id, function () {
+                    $idSales.val('');
+                    sales.push(response);
+                    fillBodyTable(sales);
+                });
+            }
+            fillBodyTable(sales);
+        }, function(res) {
+            console.error('Error while saving sale');
+            console.error(res);
+        });
+    });
+
+    $(document).on('click', '.btn_delete', function(event) {
+        event.preventDefault();
+        var tbl_row = $(this).closest('tr');
+
+        var row_id = tbl_row.attr('row_id');
+
+        sendAjaxRequest("DELETE", contextRoot + "rest/invoice/sale/"+ row_id, "", function () {
+            removeJSON(sales, "id", row_id, function () {
+                fillBodyTable(sales);
+            });
+        }, function(res) {
+            console.error('Error while deleting customer');
+            console.error(res);
+        });
+    });
+
+    function sendAjaxRequest(type, url, data, onSuccess, onError) {
+        $.ajax({
+            type: type,
+            url: url,
+            data: JSON.stringify(data),
+            contentType : 'application/json; charset=utf-8',
+            success: function(res) {
+                onSuccess(res);
+            },
+            error: function(res) {
+                onError(res);
+            }
+        });
+    }
+
+    function findJSONItem(arr, key, value) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i][key] == value) {
+                return(arr[i]);
+            }
+        }
+        return(-1);
+    }
+
+    function changeJson(arr, object) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i].id == object.id) {
+                console.log(object);
+                console.log(arr[i]);
+                // arr[i].name = object.name;
+                // arr[i].email = object.email;
+                // arr[i].phone = object.phone;
+                // arr[i].address = object.address;
+                // arr[i].pib = object.pib;
+                // arr[i].idNumber = object.idNumber;
+            }
+        }
+    }
+
+    function removeJSON(arr, key, value, callback) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i][key] == value || arr[i][key] === value) {
+                delete arr[i];
+                arr.splice(i, 1);
+                callback();
+                return true;
+            }
+        }
+        return null;
+    }
 </script>
 </html>
