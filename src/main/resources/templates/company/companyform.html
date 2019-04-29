@@ -1,0 +1,106 @@
+<html><!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Company</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"
+          th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <script src="/webjars/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+</head>
+<body>
+<div th:replace="navigation/nav :: nav"></div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h1 class="panel-title">Company Info</h1>
+                </div>
+                <div class="panel-body">
+                    <form autocomplete="off" action="#" th:action="@{/user/company}"
+                          th:object="${userCompany}" method="post" class="form-horizontal"
+                          role="form">
+                        <h2>Company Form</h2>
+                        <input type="text" th:field="*{id}" hidden/>
+                        <div class="form-group">
+                            <div class="col-sm-9">
+                                <label>Company name:</label>
+                                <label th:if="${#fields.hasErrors('name')}" th:errors="*{name}"
+                                       class="validation-message"></label>
+                                <input type="text" th:field="*{name}" placeholder="Name"
+                                       class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-9">
+                                <label>Email:</label>
+                                <input type="text" th:field="*{email}" placeholder="Email"
+                                       class="form-control"/> <label
+                                    th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
+                                    class="validation-message"></label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-9">
+                                <label>Phone:</label>
+                                <input type="text" th:field="*{phone}"
+                                       placeholder="phone number" class="form-control"/> <label
+                                    th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"
+                                    class="validation-message"></label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-9">
+                                <label>Address:</label>
+                                <input type="text" th:field="*{address}"
+                                       placeholder="address" class="form-control"/> <label
+                                    th:if="${#fields.hasErrors('address')}" th:errors="*{address}"
+                                    class="validation-message"></label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-9">
+                                <label>PIB:</label>
+                                <input type="text" th:field="*{pib}"
+                                       placeholder="PIB" class="form-control"/> <label
+                                    th:if="${#fields.hasErrors('pib')}" th:errors="*{pib}"
+                                    class="validation-message"></label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-9">
+                                <label>Company id number:</label>
+                                <input type="text" th:field="*{idNumber}"
+                                       placeholder="Your company id number" class="form-control"/> <label
+                                    th:if="${#fields.hasErrors('idNumber')}" th:errors="*{idNumber}"
+                                    class="validation-message"></label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-9">
+                                <label>Bank ac number:</label>
+                                <input type="text" th:field="*{bankAccount}"
+                                       placeholder="Your company bank account number" class="form-control"/> <label
+                                    th:if="${#fields.hasErrors('bankAccount')}" th:errors="*{bankAccount}"
+                                    class="validation-message"></label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4">
+                                <button type="submit" class="btn btn-primary btn-block">Save company data</button>
+                            </div>
+                        </div>
+                        <h2><span class="text-success" th:utext="${successMessage}"></span></h2>
+                    </form>
+                </div>
+            </div>
+    </div>
+</div>
+</body>
+</html>
