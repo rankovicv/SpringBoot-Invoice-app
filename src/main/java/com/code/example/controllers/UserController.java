@@ -32,11 +32,6 @@ public class UserController {
     private final @NonNull
     UserService userService;
 
-//    @GetMapping("/company")
-//    public String getUserCompany() {
-//        return "t";
-//    }
-
     @PostMapping("/company")
     public String saveUserCompany(@Valid UserCompany userCompany, BindingResult bindingResult, Model model) {
 

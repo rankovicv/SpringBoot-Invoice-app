@@ -43,6 +43,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-thymeleaf')
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.boot:spring-boot-starter-mail:2.0.4.RELEASE')
+    compile('org.xhtmlrenderer:flying-saucer-pdf:9.1.15')
     compile('org.webjars:bootstrap:3.3.7')
     compile('org.webjars:jquery:3.3.1')
     compile("org.springframework.boot:spring-boot-devtools")

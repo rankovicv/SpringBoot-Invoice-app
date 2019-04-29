@@ -2,6 +2,7 @@ package com.code.example.services.impl;
 
 import com.code.example.exceptions.NotFoundException;
 import com.code.example.persistence.entities.Invoice;
+import com.code.example.persistence.entities.Sale;
 import com.code.example.persistence.entities.User;
 import com.code.example.persistence.repositories.InvoiceRepository;
 import com.code.example.persistence.repositories.SaleRepository;
@@ -43,6 +44,9 @@ public class InvoiceServiceImplTest {
         Invoice invoice = new Invoice();
         HashSet<Invoice> invoices = new HashSet<>();
         invoices.add(invoice);
+        Sale sale = new Sale();
+        sale.setId(1L);
+        sale.setInvoice(invoice);
 
         when(invoiceService.getInvoices()).thenReturn(invoices);
 
